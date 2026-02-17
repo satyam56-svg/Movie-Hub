@@ -5,7 +5,7 @@ class MovieDataManager {
 
     async loadScrapedData() {
         try {
-            const response = await fetch('movie_data.json');
+            const response = await fetch('../data/movie_data.json');
             const data = await response.json();
             this.scrapedData = data;
             return data;
