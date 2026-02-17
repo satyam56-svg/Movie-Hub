@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieHub - Movie Information Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <i class="fas fa-film"></i>
+                    <span>MovieHub</span>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="#home" class="nav-link active">Home</a></li>
+                        <li><a href="#top-movies" class="nav-link">Top Movies</a></li>
+                        <li><a href="#actors" class="nav-link">Top Actors</a></li>
+                        <li><a href="#genres" class="nav-link">Genres</a></li>
+                        <li><a href="#search" class="nav-link">Search</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Discover Amazing Movies</h1>
+                <p>Get ratings, reviews, and recommendations from multiple sources</p>
+                <div class="search-box">
+                    <input type="text" id="movieSearch" placeholder="Search for movies, actors, genres...">
+                    <button onclick="searchMovies()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="top-movies" class="section">
+        <div class="container">
+            <h2 class="section-title">Top Movies This Week</h2>
+            <div class="loading" id="moviesLoading">
+                <i class="fas fa-spinner fa-spin"></i> Loading movies...
+            </div>
+            <div class="movies-grid" id="moviesGrid">
+            </div>
+        </div>
+    </section>
+
+    <section id="actors" class="section bg-dark">
+        <div class="container">
+            <h2 class="section-title">Top Actors & Actresses</h2>
+            <div class="loading" id="actorsLoading">
+                <i class="fas fa-spinner fa-spin"></i> Loading actors...
+            </div>
+            <div class="actors-grid" id="actorsGrid">
+            </div>
+        </div>
+    </section>
+
+    <section id="genres" class="section">
+        <div class="container">
+            <h2 class="section-title">Browse by Genre</h2>
+            <div class="genres-grid" id="genresGrid">
+                <div class="genre-card" onclick="loadGenreMovies('action')">
+                    <i class="fas fa-fist-raised"></i>
+                    <h3>Action</h3>
+                </div>
+                <div class="genre-card" onclick="loadGenreMovies('comedy')">
+                    <i class="fas fa-laugh"></i>
+                    <h3>Comedy</h3>
+                </div>
+                <div class="genre-card" onclick="loadGenreMovies('drama')">
+                    <i class="fas fa-theater-masks"></i>
+                    <h3>Drama</h3>
+                </div>
+                <div class="genre-card" onclick="loadGenreMovies('horror')">
+                    <i class="fas fa-ghost"></i>
+                    <h3>Horror</h3>
+                </div>
+                <div class="genre-card" onclick="loadGenreMovies('romance')">
+                    <i class="fas fa-heart"></i>
+                    <h3>Romance</h3>
+                </div>
+                <div class="genre-card" onclick="loadGenreMovies('scifi')">
+                    <i class="fas fa-rocket"></i>
+                    <h3>Sci-Fi</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="search-results" class="section bg-dark" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Search Results</h2>
+            <div class="movies-grid" id="searchResultsGrid">
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 MovieHub. Data collected from IMDb, Rotten Tomatoes, and other sources.</p>
+        </div>
+    </footer>
+
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="movieDetails">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
