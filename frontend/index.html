@@ -17,12 +17,20 @@
                     <i class="fas fa-film"></i>
                     <span>MovieHub</span>
                 </div>
+                <div class="location-display">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="currentLocation">Detecting location...</span>
+                    <button id="refreshLocation" onclick="detectLocation()" title="Refresh Location">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
                 <nav class="nav-menu">
                     <ul>
                         <li><a href="#home" class="nav-link active">Home</a></li>
                         <li><a href="#top-movies" class="nav-link">Top Movies</a></li>
                         <li><a href="#actors" class="nav-link">Top Actors</a></li>
                         <li><a href="#genres" class="nav-link">Genres</a></li>
+                        <li><a href="#nearby" class="nav-link">Nearby Theaters</a></li>
                         <li><a href="#search" class="nav-link">Search</a></li>
                     </ul>
                 </nav>
@@ -93,6 +101,22 @@
                     <i class="fas fa-rocket"></i>
                     <h3>Sci-Fi</h3>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="nearby" class="section bg-dark">
+        <div class="container">
+            <h2 class="section-title">Nearby Movie Theaters</h2>
+            <div class="loading" id="theatersLoading">
+                <i class="fas fa-spinner fa-spin"></i> Detecting your location and finding nearby theaters...
+            </div>
+            <div class="theaters-grid" id="theatersGrid">
+                <!-- Theaters will be loaded here based on location -->
+            </div>
+            <div class="location-info">
+                <p><i class="fas fa-info-circle"></i> Showing theaters near your current location. 
+                <button onclick="detectLocation()" class="btn-refresh">Update Location</button></p>
             </div>
         </div>
     </section>

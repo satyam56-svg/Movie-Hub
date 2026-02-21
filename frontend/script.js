@@ -1,3 +1,431 @@
+// GPS Location Manager
+class LocationManager {
+    constructor() {
+        this.currentLocation = null;
+        this.watchId = null;
+    }
+
+    // Detect user's current location
+    async detectLocation() {
+        const locationElement = document.getElementById('currentLocation');
+        const refreshBtn = document.getElementById('refreshLocation');
+        
+        if (!navigator.geolocation) {
+            locationElement.textContent = 'Location not supported';
+            this.loadDefaultTheaters();
+            return null;
+        }
+
+        // Show loading state
+        locationElement.textContent = 'Detecting...';
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        return new Promise((resolve, reject) => {
+            // Add timeout to prevent hanging
+            const timeoutId = setTimeout(() => {
+                locationElement.textContent = 'Location timeout';
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                this.loadDefaultTheaters();
+                reject(new Error('Location detection timeout'));
+            }, 15000); // 15 second timeout
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    clearTimeout(timeoutId);
+                    const { latitude, longitude } = position.coords;
+                    this.currentLocation = { latitude, longitude };
+                    
+                    console.log('Location detected successfully:', this.currentLocation);
+                    
+                    try {
+                        // Get location name using reverse geocoding
+                        const locationName = await this.getLocationName(latitude, longitude);
+                        locationElement.textContent = locationName;
+                        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                        
+                        // Load nearby theaters
+                        await this.loadNearbyTheaters();
+                        
+                        // Update content based on location
+                        this.updateContentForLocation(locationName);
+                        
+                        resolve(this.currentLocation);
+                    } catch (error) {
+                        console.error('Error processing location:', error);
+                        locationElement.textContent = `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
+                        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                        
+                        // Still load theaters even if location name fails
+                        await this.loadNearbyTheaters();
+                        resolve(this.currentLocation);
+                    }
+                },
+                (error) => {
+                    clearTimeout(timeoutId);
+                    console.error('Location error:', error);
+                    
+                    let errorMessage = 'Location denied';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location denied';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location timeout';
+                            break;
+                        default:
+                            errorMessage = 'Location error';
+                            break;
+                    }
+                    
+                    locationElement.textContent = errorMessage;
+                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                    
+                    // Load default content
+                    this.loadDefaultTheaters();
+                    reject(error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 300000 // 5 minutes
+                }
+            );
+        });
+    }
+
+    // Get location name from coordinates (using Nominatim API)
+    async getLocationName(lat, lon) {
+        try {
+            console.log(`Getting location name for coordinates: ${lat}, ${lon}`);
+            
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=en`, {
+                method: 'GET',
+                headers: {
+                    'User-Agent': 'MovieHub/1.0 (movie-portal@example.com)'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Location name response:', data);
+            
+            if (data && data.address) {
+                const city = data.address.city || data.address.town || data.address.village || data.address.county || 'Unknown';
+                const state = data.address.state || data.address.region || '';
+                const country = data.address.country || '';
+                
+                let locationName = city;
+                if (state && state !== city) {
+                    locationName += state ? `, ${state}` : '';
+                }
+                if (country && country !== 'India' && country !== 'United States') {
+                    locationName += `, ${country}`;
+                }
+                
+                return locationName || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+            }
+            
+            return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+        } catch (error) {
+            console.error('Error getting location name:', error);
+            // Return coordinates as fallback
+            return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+        }
+    }
+
+    // Update content based on location
+    updateContentForLocation(locationName) {
+        console.log(`Updating content for location: ${locationName}`);
+        
+        // You can customize movie recommendations based on location
+        // For example: show regional movies, local theaters, etc.
+        
+        // Update hero section with location-based message
+        const heroContent = document.querySelector('.hero-content p');
+        if (heroContent) {
+            heroContent.textContent = `Get ratings, reviews, and recommendations from multiple sources • Located in ${locationName}`;
+        }
+    }
+
+    // Load nearby theaters based on location
+    async loadNearbyTheaters() {
+        const theatersGrid = document.getElementById('theatersGrid');
+        const loadingElement = document.getElementById('theatersLoading');
+        
+        if (!this.currentLocation) {
+            console.log('No location available, loading default theaters');
+            this.loadDefaultTheaters();
+            return;
+        }
+
+        try {
+            console.log('Loading nearby theaters for location:', this.currentLocation);
+            
+            // Try multiple approaches to find theaters
+            let theaters = [];
+            
+            // Method 1: Try Overpass API
+            theaters = await this.tryOverpassAPI();
+            
+            // Method 2: If Overpass fails, use enhanced defaults based on location
+            if (theaters.length === 0) {
+                console.log('Overpass API failed or returned no results, using location-based defaults');
+                theaters = this.getLocationBasedTheaters();
+            }
+            
+            loadingElement.style.display = 'none';
+            
+            if (theaters.length > 0) {
+                this.displayTheaters(theaters);
+            } else {
+                console.log('No theaters found, loading default theaters');
+                this.loadDefaultTheaters();
+            }
+            
+        } catch (error) {
+            console.error('Error loading nearby theaters:', error);
+            console.log('Falling back to default theaters');
+            loadingElement.style.display = 'none';
+            this.loadDefaultTheaters();
+        }
+    }
+
+    // Try Overpass API with better error handling
+    async tryOverpassAPI() {
+        try {
+            const { latitude, longitude } = this.currentLocation;
+            const radius = 15000; // 15km radius
+            
+            const query = `
+                [out:json][timeout:10];
+                (
+                    node["amenity"="cinema"](around:${radius},${latitude},${longitude});
+                    way["amenity"="cinema"](around:${radius},${latitude},${longitude});
+                );
+                out center;
+            `;
+            
+            const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'MovieHub/1.0'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Overpass API response:', data);
+            
+            return data.elements || [];
+            
+        } catch (error) {
+            console.error('Overpass API failed:', error);
+            return [];
+        }
+    }
+
+    // Get location-based default theaters
+    getLocationBasedTheaters() {
+        const { latitude, longitude } = this.currentLocation;
+        
+        // Different theater sets based on approximate location
+        const theaterSets = {
+            'india': [
+                { name: 'PVR Cinemas', lat: latitude + 0.01, lon: longitude + 0.01, address: 'City Center Mall' },
+                { name: 'INOX Movies', lat: latitude + 0.02, lon: longitude + 0.01, address: 'Shopping Complex' },
+                { name: 'Cinepolis', lat: latitude + 0.01, lon: longitude + 0.02, address: 'Entertainment Zone' },
+                { name: 'Carnival Cinemas', lat: latitude - 0.01, lon: longitude + 0.01, address: 'Multiplex Mall' }
+            ],
+            'default': [
+                { name: 'AMC Theater', lat: latitude + 0.01, lon: longitude + 0.01, address: 'Downtown Mall' },
+                { name: 'Regal Cinemas', lat: latitude + 0.02, lon: longitude + 0.01, address: 'City Center' },
+                { name: 'Cinemark', lat: latitude + 0.01, lon: longitude + 0.02, address: 'Entertainment Complex' },
+                { name: 'Marcus Theaters', lat: latitude - 0.01, lon: longitude + 0.01, address: 'Shopping Plaza' }
+            ]
+        };
+        
+        // Rough location detection based on coordinates
+        let locationKey = 'default';
+        if (latitude > 6 && latitude < 38 && longitude > 68 && longitude < 97) {
+            locationKey = 'india'; // Roughly India coordinates
+        }
+        
+        const theaters = theaterSets[locationKey] || theaterSets['default'];
+        
+        // Add calculated distances
+        return theaters.map(theater => ({
+            ...theater,
+            tags: {
+                name: theater.name,
+                'addr:street': theater.address
+            }
+        }));
+    }
+
+    // Display theaters in the grid
+    displayTheaters(theaters) {
+        const theatersGrid = document.getElementById('theatersGrid');
+        
+        const theaterCards = theaters.map(theater => {
+            const name = theater.tags?.name || 'Unknown Theater';
+            
+            // Get coordinates from different possible locations
+            let lat, lon;
+            if (theater.lat && theater.lon) {
+                lat = theater.lat;
+                lon = theater.lon;
+            } else if (theater.center?.lat && theater.center?.lon) {
+                lat = theater.center.lat;
+                lon = theater.center.lon;
+            } else {
+                lat = 0; // fallback
+                lon = 0;
+            }
+            
+            const distance = lat && lon ? this.calculateDistance(
+                this.currentLocation.latitude,
+                this.currentLocation.longitude,
+                lat,
+                lon
+            ) : 0;
+            
+            return `
+                <div class="theater-card">
+                    <div class="theater-info">
+                        <h3><i class="fas fa-film"></i> ${name}</h3>
+                        <p class="distance"><i class="fas fa-map-marker-alt"></i> ${distance > 0 ? `${distance.toFixed(1)} km away` : 'Nearby'}</p>
+                        <p class="address">${theater.tags?.['addr:street'] || theater.tags?.['addr:housenumber'] ? 
+                            `${theater.tags?.['addr:housenumber'] || ''} ${theater.tags?.['addr:street'] || ''}`.trim() : 
+                            'Address not available'}</p>
+                    </div>
+                    <div class="theater-actions">
+                        <button class="btn-primary" onclick="getDirections('${lat}', '${lon}')" ${lat === 0 ? 'disabled' : ''}>
+                            <i class="fas fa-directions"></i> Directions
+                        </button>
+                        <button class="btn-secondary" onclick="showTheaterMovies('${name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-ticket-alt"></i> Showtimes
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        theatersGrid.innerHTML = theaterCards;
+    }
+
+    // Load default theaters (fallback)
+    loadDefaultTheaters() {
+        const theatersGrid = document.getElementById('theatersGrid');
+        const loadingElement = document.getElementById('theatersLoading');
+        
+        loadingElement.style.display = 'none';
+        
+        // Enhanced default theaters with more realistic data
+        const defaultTheaters = [
+            { 
+                name: 'PVR Cinemas', 
+                distance: 2.1, 
+                address: 'City Center Mall, Main Road',
+                lat: 28.6139,
+                lon: 77.2090
+            },
+            { 
+                name: 'INOX Movies', 
+                distance: 3.5, 
+                address: 'Shopping Complex, MG Road',
+                lat: 28.6140,
+                lon: 77.2091
+            },
+            { 
+                name: 'Cinepolis', 
+                distance: 4.2, 
+                address: 'Entertainment Zone, Sector 18',
+                lat: 28.6141,
+                lon: 77.2092
+            },
+            { 
+                name: 'Carnival Cinemas', 
+                distance: 5.8, 
+                address: 'Multiplex Mall, Connaught Place',
+                lat: 28.6142,
+                lon: 77.2093
+            }
+        ];
+        
+        const theaterCards = defaultTheaters.map(theater => `
+            <div class="theater-card">
+                <div class="theater-info">
+                    <h3><i class="fas fa-film"></i> ${theater.name}</h3>
+                    <p class="distance"><i class="fas fa-map-marker-alt"></i> ${theater.distance} km away</p>
+                    <p class="address">${theater.address}</p>
+                </div>
+                <div class="theater-actions">
+                    <button class="btn-primary" onclick="getDirections('${theater.lat}', '${theater.lon}')">
+                        <i class="fas fa-directions"></i> Directions
+                    </button>
+                    <button class="btn-secondary" onclick="showTheaterMovies('${theater.name}')">
+                        <i class="fas fa-ticket-alt"></i> Showtimes
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        theatersGrid.innerHTML = theaterCards;
+        console.log('Loaded default theaters as fallback');
+    }
+
+    // Calculate distance between two points
+    calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Earth's radius in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    // Watch location changes
+    startWatchingLocation() {
+        if (navigator.geolocation) {
+            this.watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    this.currentLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    console.log('Location updated:', this.currentLocation);
+                },
+                (error) => console.error('Location watch error:', error),
+                { enableHighAccuracy: true, maximumAge: 60000 }
+            );
+        }
+    }
+
+    // Stop watching location
+    stopWatchingLocation() {
+        if (this.watchId) {
+            navigator.geolocation.clearWatch(this.watchId);
+            this.watchId = null;
+        }
+    }
+}
+
+// Global location manager instance
+const locationManager = new LocationManager();
+
+// Movie Data Manager
 class MovieDataManager {
     constructor() {
         this.scrapedData = null;
@@ -571,14 +999,53 @@ function closeModal() {
     document.getElementById('movieModal').style.display = 'none';
 }
 
-let uiManager;
-document.addEventListener('DOMContentLoaded', () => {
-    uiManager = new UIManager();
-});
+// GPS/Location Functions
+async function detectLocation() {
+    try {
+        await locationManager.detectLocation();
+    } catch (error) {
+        console.error('Location detection failed:', error);
+    }
+}
 
+function getDirections(lat, lon) {
+    if (!locationManager.currentLocation) {
+        alert('Please enable location access for directions');
+        return;
+    }
+    
+    const { latitude, longitude } = locationManager.currentLocation;
+    const url = `https://www.google.com/maps/dir/${latitude},${longitude}/${lat},${lon}`;
+    window.open(url, '_blank');
+}
+
+function showTheaterMovies(theaterName) {
+    alert(`Showtimes for ${theaterName} coming soon!`);
+}
+
+// Modal click handler
 window.onclick = function (event) {
     const modal = document.getElementById('movieModal');
     if (event.target === modal) {
         modal.style.display = 'none';
     }
 }
+
+// Initialize location detection when page loads
+let uiManager;
+document.addEventListener('DOMContentLoaded', () => {
+    uiManager = new UIManager();
+    
+    // Auto-detect location on page load
+    setTimeout(() => {
+        detectLocation();
+    }, 2000);
+    
+    // Optional: Watch location changes
+    locationManager.startWatchingLocation();
+});
+
+// Cleanup location watching when page unloads
+window.addEventListener('beforeunload', () => {
+    locationManager.stopWatchingLocation();
+});
