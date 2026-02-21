@@ -445,20 +445,44 @@ class MovieDataManager {
 
     async searchMovies(query) {
         try {
-            const scraped = await this.loadScrapedData();
+            const q = (query || '').trim().toLowerCase();
+            const matches = (movie) => {
+                if (!movie) return false;
+                const fields = [];
+                if (movie.title) fields.push(movie.title);
+                if (movie.genre) fields.push(movie.genre);
+                if (movie.director) fields.push(movie.director);
+                if (movie.year) fields.push(String(movie.year));
+                if (movie.source) fields.push(movie.source);
+                if (movie.plot) fields.push(movie.plot);
+                if (Array.isArray(movie.actors)) {
+                    const actorNames = movie.actors
+                        .map(a => typeof a === 'object' ? a?.name : a)
+                        .filter(Boolean)
+                        .join(' ');
+                    if (actorNames) fields.push(actorNames);
+                } else if (movie.actors) {
+                    fields.push(movie.actors);
+                }
+                const haystack = fields.join(' | ').toLowerCase();
+                return haystack.includes(q);
+            };
 
+            const scraped = await this.loadScrapedData();
+            let results = [];
             if (scraped && scraped.length > 0) {
-                return scraped.filter(movie =>
-                    movie.title.toLowerCase().includes(query.toLowerCase()) ||
-                    (movie.genre && movie.genre.toLowerCase().includes(query.toLowerCase()))
-                );
+                results = scraped.filter(matches);
+            } else {
+                results = this.getSampleMovies().filter(matches);
             }
 
-            return this.getSampleMovies().filter(movie =>
-                movie.title.toLowerCase().includes(query.toLowerCase()) ||
-                movie.genre.toLowerCase().includes(query.toLowerCase())
-            );
-
+            const seen = new Set();
+            return results.filter(m => {
+                const key = (m.title || '').toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
         } catch (error) {
             console.error('Error searching movies:', error);
             return [];
@@ -716,6 +740,10 @@ class UIManager {
         }
     }
 
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async loadTopMovies() {
         const loadingElement = document.getElementById('moviesLoading');
         const gridElement = document.getElementById('moviesGrid');
@@ -843,148 +871,35 @@ class UIManager {
         searchResultsSection.style.display = 'block';
 
         try {
-            console.log('Searching scraped data for:', query);
-
-            // Search in scraped data
-            const searchResults = await this.dataManager.searchMovies(query);
-
-            if (searchResults && searchResults.length > 0) {
-                console.log('Found', searchResults.length, 'results in scraped data');
-                this.displayMovies(searchResults, searchResultsGrid);
-            } else {
-                searchResultsGrid.innerHTML = '<div class="loading">No movies found in scraped data. Try another search!</div>';
-            }
-
-            searchResultsSection.scrollIntoView({ behavior: 'smooth' });
-        } catch (error) {
-            console.error('Error searching movies:', error);
-            searchResultsGrid.innerHTML = '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Error searching scraped data</div>';
-        }
-    }
-
-    async loadGenreMovies(genre) {
-        const searchResultsGrid = document.getElementById('searchResultsGrid');
-        const searchResultsSection = document.getElementById('search-results');
-
-        searchResultsGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading genre movies...</div>';
-        searchResultsSection.style.display = 'block';
-
-        try {
-            await this.delay(800);
-
-            const movies = this.dataManager.getMoviesByGenre(genre);
-            this.displayMovies(movies, searchResultsGrid);
-
-            searchResultsSection.querySelector('.section-title').textContent = `${genre.charAt(0).toUpperCase() + genre.slice(1)} Movies`;
-
-            searchResultsSection.scrollIntoView({ behavior: 'smooth' });
-        } catch (error) {
-        }
-    }
-
-    async loadTopActors() {
-        const loadingElement = document.getElementById('actorsLoading');
-        const gridElement = document.getElementById('actorsGrid');
-
-        try {
-            if (!this.dataManager.scrapedData) {
-                await this.dataManager.loadScrapedData();
-            }
-
-            let actors = [];
-            if (this.dataManager.scrapedData && this.dataManager.scrapedData.length > 0) {
-                const actorMap = new Map();
-                this.dataManager.scrapedData.forEach(movie => {
-                    if (Array.isArray(movie.actors)) {
-                        movie.actors.forEach(actor => {
-                            const name = typeof actor === 'object' ? actor.name : actor;
-                            const photo = (typeof actor === 'object' && actor.photo) ? actor.photo : `https://via.placeholder.com/120x120/1a1a2e/fff?text=${encodeURIComponent(name.charAt(0))}`;
-
-                            if (!actorMap.has(name)) {
-                                actorMap.set(name, {
-                                    name: name,
-                                    movies: [movie.title],
-                                    photo: photo
-                                });
-                            } else {
-                                const actorData = actorMap.get(name);
-                                if (!actorData.movies.includes(movie.title)) {
-                                    actorData.movies.push(movie.title);
-                                }
-                                if (actorData.photo.includes('placeholder.com') && !photo.includes('placeholder.com')) {
-                                    actorData.photo = photo;
-                                }
-                            }
-                        });
+            const q = query.toLowerCase();
+            const numMatch = q.match(/(\d{1,3})/);
+            const limit = numMatch ? Math.max(1, Math.min(999, parseInt(numMatch[1], 10))) : null;
+            let cleaned = q.replace(/\btop\b/g, '')
+                           .replace(/\bmovies?\b/g, '')
+                           .replace(/\bfilms?\b/g, '')
+                           .replace(/(\d{1,3})/g, '')
+                           .replace(/\s+/g, ' ')
+                           .trim();
+            const effectiveQuery = cleaned.length > 0 ? cleaned : '';
+            const results = await this.dataManager.searchMovies(effectiveQuery);
+            let finalResults = results || [];
+            if (limit) {
+                const toNum = v => {
+                    if (v === null || v === undefined) return 0;
+                    if (typeof v === 'number') return v;
+                    if (typeof v === 'string') {
+                        const s = v.replace('%', '').trim();
+                        const n = parseFloat(s);
+                        return isNaN(n) ? 0 : n;
                     }
-                });
-
-                actors = Array.from(actorMap.values()).map(a => ({
-                    ...a,
-                    movies: a.movies.slice(0, 3).join(', ')
-                })).slice(0, 12);
+                    return 0;
+                };
+                const score = m => toNum(m.imdbRating) || toNum(m.rating) || toNum(m.metacritic_score) || toNum(m.rotten_tomatoes_score);
+                finalResults = [...finalResults].sort((a, b) => score(b) - score(a)).slice(0, limit);
             }
 
-            if (actors.length === 0) {
-                actors = this.dataManager.getTopActors();
-            }
-
-            this.displayActors(actors, gridElement);
-            loadingElement.style.display = 'none';
-        } catch (error) {
-            console.error('Error loading actors:', error);
-            loadingElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading actors';
-        }
-    }
-
-    displayMovies(movies, container) {
-        container.innerHTML = movies.map(movie => `
-        <div class="movie-card" onclick="uiManager.showMovieDetails('${movie.title}')">
-            <img src="${movie.poster}" alt="${movie.title}" class="movie-poster" 
-                 onerror="this.src='https://via.placeholder.com/300x450/1a1a2e/fff?text=${encodeURIComponent(movie.title)}'">
-            <div class="movie-info">
-                <div class="movie-title">${movie.title}</div>
-                <div class="movie-year">${movie.year}</div>
-                <div class="movie-rating">
-                    <span class="rating-stars">★</span>
-                    <span class="rating-value">${movie.imdbRating || movie.rating || 'N/A'}</span>
-                </div>
-                <div class="movie-source">Source: ${movie.source || 'MovieHub'}</div>
-            </div>
-        </div>
-    `).join('');
-    }
-
-    displayActors(actors, container) {
-        container.innerHTML = actors.map(actor => `
-        <div class="actor-card" onclick="uiManager.showActorDetails('${actor.name}')">
-            <img src="${actor.photo}" alt="${actor.name}" class="actor-photo"
-                 onerror="this.src='https://via.placeholder.com/120x120/1a1a2e/fff?text=${encodeURIComponent(actor.name)}'">
-            <div class="actor-name">${actor.name}</div>
-            <div class="actor-movies">${actor.movies}</div>
-        </div>
-    `).join('');
-    }
-
-    async searchMovies() {
-        const query = document.getElementById('movieSearch').value.trim();
-        if (!query) return;
-
-        const searchResultsGrid = document.getElementById('searchResultsGrid');
-        const searchResultsSection = document.getElementById('search-results');
-
-        searchResultsGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Searching scraped data...</div>';
-        searchResultsSection.style.display = 'block';
-
-        try {
-            console.log('Searching scraped data for:', query);
-
-            // Search in scraped data
-            const searchResults = await this.dataManager.searchMovies(query);
-
-            if (searchResults && searchResults.length > 0) {
-                console.log('Found', searchResults.length, 'results in scraped data');
-                this.displayMovies(searchResults, searchResultsGrid);
+            if (finalResults && finalResults.length > 0) {
+                this.displayMovies(finalResults, searchResultsGrid);
             } else {
                 searchResultsGrid.innerHTML = '<div class="loading">No movies found in scraped data. Try another search!</div>';
             }
