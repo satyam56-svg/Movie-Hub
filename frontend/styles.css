@@ -712,6 +712,598 @@ body {
     }
 }
 
+/* Showtimes Interface Styles */
+.showtimes-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.showtimes-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #333;
+}
+
+.showtimes-header h2 {
+    color: #f5c518;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+}
+
+.showtimes-header h2 i {
+    margin-right: 0.5rem;
+}
+
+.showtimes-day {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.showtimes-day h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #444;
+}
+
+.movies-showtimes {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.movie-showtimes-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-showtimes-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 197, 24, 0.15);
+    border-color: rgba(245, 197, 24, 0.3);
+}
+
+.movie-showtimes-info h4 {
+    color: #ffffff;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.movie-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+}
+
+.movie-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.movie-meta i {
+    color: #f5c518;
+    font-size: 0.8rem;
+}
+
+.showtimes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.showtime-btn {
+    background: linear-gradient(135deg, rgba(245, 197, 24, 0.1), rgba(245, 197, 24, 0.2));
+    border: 1px solid rgba(245, 197, 24, 0.4);
+    color: #f5c518;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    min-width: 80px;
+    text-align: center;
+}
+
+.showtime-btn:hover {
+    background: linear-gradient(135deg, rgba(245, 197, 24, 0.3), rgba(245, 197, 24, 0.4));
+    border-color: #f5c518;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 197, 24, 0.2);
+    color: #ffffff;
+}
+
+.showtime-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design for Showtimes */
+@media (max-width: 768px) {
+    .showtimes-container {
+        margin: 0 1rem;
+    }
+    
+    .showtimes-day {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .movie-showtimes-card {
+        padding: 1rem;
+    }
+    
+    .movie-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .showtimes-list {
+        gap: 0.5rem;
+    }
+    
+    .showtime-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        min-width: 70px;
+    }
+    
+    .showtimes-header h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-meta span {
+        font-size: 0.8rem;
+    }
+    
+    .showtimes-list {
+        gap: 0.4rem;
+    }
+    
+    .showtime-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        min-width: 65px;
+    }
+}
+
+/* Enhanced Watch Options Styles */
+.watch-options {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.watch-category {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #333;
+}
+
+.watch-category h4 {
+    color: #f5c518;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.watch-category h5 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Cinema Options Styles */
+.cinema-options {
+    margin-top: 1rem;
+}
+
+.cinema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.cinema-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cinema-card:hover {
+    background: linear-gradient(135deg, rgba(245, 197, 24, 0.1), rgba(245, 197, 24, 0.2));
+    border-color: rgba(245, 197, 24, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 197, 24, 0.15);
+}
+
+.cinema-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.cinema-info {
+    flex: 1;
+}
+
+.cinema-name {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+}
+
+.cinema-location {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.cinema-status {
+    margin-top: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.now-showing {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-badge.coming-soon {
+    background: rgba(255, 152, 0, 0.2);
+    color: #FF9800;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.cinema-action {
+    color: #f5c518;
+    font-size: 1.3rem;
+    transition: color 0.3s ease;
+}
+
+.cinema-card:hover .cinema-action {
+    color: #ffffff;
+}
+
+/* Streaming and Booking Interface Styles */
+.streaming-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.streaming-section h3 {
+    color: #f5c518;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.streaming-category {
+    margin-bottom: 1.5rem;
+}
+
+.streaming-category h4 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.streaming-services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.streaming-service {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.streaming-service:hover {
+    background: linear-gradient(135deg, rgba(245, 197, 24, 0.1), rgba(245, 197, 24, 0.2));
+    border-color: rgba(245, 197, 24, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 197, 24, 0.15);
+}
+
+.service-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.service-info {
+    flex: 1;
+}
+
+.service-name {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.service-price {
+    color: #f5c518;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.service-action {
+    color: #f5c518;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.streaming-service:hover .service-action {
+    color: #ffffff;
+}
+
+/* Booking Container Styles */
+.booking-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.booking-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #333;
+}
+
+.booking-header h2 {
+    color: #f5c518;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.booking-summary {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #333;
+}
+
+.booking-movie h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.booking-details p {
+    color: #aaa;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.booking-pricing {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #444;
+}
+
+.price-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    color: #aaa;
+}
+
+.price-item.total {
+    color: #f5c518;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #444;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.booking-actions .btn-primary {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.booking-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #45a049, #3d8b40);
+}
+
+.booking-info {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(245, 197, 24, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(245, 197, 24, 0.2);
+}
+
+/* Responsive Design for Enhanced Watch Options */
+@media (max-width: 768px) {
+    .watch-options {
+        gap: 1.5rem;
+    }
+    
+    .watch-category {
+        padding: 1rem;
+    }
+    
+    .cinema-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .cinema-card {
+        padding: 1rem;
+    }
+    
+    .cinema-logo {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .cinema-name {
+        font-size: 1rem;
+    }
+    
+    .cinema-location {
+        font-size: 0.85rem;
+    }
+    
+    .streaming-services {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .streaming-service {
+        padding: 0.75rem;
+    }
+    
+    .service-logo {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .booking-actions {
+        flex-direction: column;
+    }
+    
+    .booking-actions .btn-primary,
+    .booking-actions .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .streaming-section {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .booking-summary {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .watch-category h4 {
+        font-size: 1.1rem;
+    }
+    
+    .watch-category h5 {
+        font-size: 0.95rem;
+    }
+    
+    .cinema-card {
+        padding: 0.75rem;
+    }
+    
+    .cinema-logo {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .cinema-name {
+        font-size: 0.95rem;
+    }
+    
+    .cinema-location {
+        font-size: 0.8rem;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+    
+    .streaming-section h3 {
+        font-size: 1.1rem;
+    }
+    
+    .streaming-category h4 {
+        font-size: 1rem;
+    }
+    
+    .booking-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .service-name {
+        font-size: 0.9rem;
+    }
+    
+    .service-price {
+        font-size: 0.8rem;
+    }
+}
+
 ::-webkit-scrollbar {
     width: 8px;
 }
