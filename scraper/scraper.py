@@ -20,9 +20,9 @@ class MovieScraper:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def get_page(self, url, delay=2):
+    def get_page(self, url, delay=0.5):
         if delay > 0:
-            time.sleep(delay + random.uniform(0.5, 1.5)) 
+            time.sleep(delay + random.uniform(0.1, 0.3)) 
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
@@ -46,8 +46,8 @@ class MovieScraper:
             if json_ld:
                 data = json.loads(json_ld.text)
                 if 'itemListElement' in data:
-                    # Increased limit for better variety
-                    for item in data['itemListElement'][:100]:
+                    # Reduced limit for speed - only top 50 movies
+                    for item in data['itemListElement'][:50]:
                         movie_info = item.get('item', {})
                         full_title = movie_info.get('name', 'Unknown')
                         year = movie_info.get('datePublished', movie_info.get('releaseDate', 'Unknown'))
@@ -72,8 +72,9 @@ class MovieScraper:
                         if movie_url:
                             movie_url = urljoin("https://www.imdb.com", movie_url)
                         
+                        # Limit details scraping to top 30 movies for speed
                         details = {}
-                        if movie_url:
+                        if movie_url and len(movies) < 30:
                             details = self.scrape_imdb_movie_details(movie_url)
                         
                         movie_item = {
@@ -92,7 +93,8 @@ class MovieScraper:
             if not movie_items:
                  movie_items = soup.select('.lister-list tr')
             
-            for item in movie_items[:100]:
+            # Reduced limit for speed
+            for item in movie_items[:50]:
                 try:
                     title_element = item.select_one('h3.ipc-title__text')
                     if not title_element:
@@ -202,8 +204,9 @@ class MovieScraper:
                     details['year'] = year_el.text.strip()
             
             details['actors'] = []
+            # Limit actor extraction to 3 for speed
             actor_containers = soup.select('div[data-testid="title-cast-item"]')
-            for container in actor_containers[:5]:
+            for container in actor_containers[:3]:
                 name_el = container.select_one('a[data-testid="title-cast-item__actor"]')
                 img_el = container.select_one('img')
                 if name_el:
