@@ -26,3 +26,10 @@ Thumbs.db
 
 # Old structure (to be removed)
 Movie-Hub/
+
+# Node / Vite
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
