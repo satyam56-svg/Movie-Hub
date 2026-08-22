@@ -31,13 +31,24 @@ public class TheaterController {
 
         return restClient
                 .post()
-                .uri("https://overpass.kumi.systems/api/interpreter")
+                .uri("https://overpass.private.coffee/api/interpreter")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body("data=" + java.net.URLEncoder.encode(
                         query,
                         java.nio.charset.StandardCharsets.UTF_8
                 ))
                 .retrieve()
+                .onStatus(
+                        status -> status.isError(),
+                        (request, response) -> {
+                            System.out.println("OVERPASS STATUS: " + response.getStatusCode());
+                            System.out.println("OVERPASS RESPONSE: " +
+                                    new String(
+                                            response.getBody().readAllBytes(),
+                                            java.nio.charset.StandardCharsets.UTF_8
+                                    ));
+                        }
+                )
                 .body(String.class);
     }
 }
