@@ -31,7 +31,7 @@ public class TheaterController {
 
         return restClient
                 .post()
-                .uri("https://overpass.private.coffee/api/interpreter")
+                .uri("https://overpass-api.de/api/interpreter"))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body("data=" + java.net.URLEncoder.encode(
                         query,
