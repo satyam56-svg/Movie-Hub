@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import API_BASE_URL from '../api/config'
+import { authFetch } from '../api/authFetch'
 
 function MyReviews() {
     const [reviews, setReviews] = useState([])
@@ -17,13 +18,8 @@ function MyReviews() {
             }
 
             try {
-                const response = await fetch(
-                    `${API_BASE_URL}/api/reviews/my`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
+                const response = await authFetch(
+                    `${API_BASE_URL}/api/reviews/my`
                 )
 
                 if (!response.ok) {

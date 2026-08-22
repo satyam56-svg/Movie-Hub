@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import API_BASE_URL from '../api/config'
+import { authFetch } from '../api/authFetch'
 
 function FavoriteMovieCard({ favorite, onRemove }) {
     const [imgError, setImgError] = useState(false)
@@ -72,13 +73,8 @@ function Favorites() {
                 setLoading(true)
                 setError('')
 
-                const response = await fetch(
-                    `${API_BASE_URL}/api/favorites`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
+                const response = await authFetch(
+                    `${API_BASE_URL}/api/favorites`
                 )
 
                 if (!response.ok) {
@@ -107,14 +103,9 @@ function Favorites() {
         }
 
         try {
-            const response = await fetch(
+            const response = await authFetch(
                 `${API_BASE_URL}/api/favorites/${movieId}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                { method: 'DELETE' }
             )
 
             if (!response.ok) {

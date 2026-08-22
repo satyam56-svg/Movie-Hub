@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 import Login from './components/Login'
@@ -19,6 +19,7 @@ function App() {
         !!localStorage.getItem('token')
     )
     const [showRegister, setShowRegister] = useState(false)
+
 
     const handleSearch = (term) => {
         setSearchTerm(term)
@@ -41,6 +42,16 @@ function App() {
 
         setIsLoggedIn(false)
     }
+
+    // Auto-logout when authFetch detects a stale token (401/403 from backend)
+    useEffect(() => {
+        const onSessionExpired = () => {
+            setIsLoggedIn(false)
+        }
+        window.addEventListener('session-expired', onSessionExpired)
+        return () =>
+            window.removeEventListener('session-expired', onSessionExpired)
+    }, [])
 
     return (
         <div className="app-container">

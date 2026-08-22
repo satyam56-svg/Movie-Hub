@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import API_BASE_URL from '../api/config'
+import { authFetch } from '../api/authFetch'
 
 function WatchlistMovieCard({ item, onRemove }) {
     const [imgError, setImgError] = useState(false)
@@ -67,13 +68,8 @@ function Watchlist() {
             setLoading(true)
             setError('')
 
-            const response = await fetch(
-                `${API_BASE_URL}/api/watchlist`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            const response = await authFetch(
+                `${API_BASE_URL}/api/watchlist`
             )
 
             if (!response.ok) {
@@ -107,14 +103,9 @@ function Watchlist() {
         }
 
         try {
-            const response = await fetch(
+            const response = await authFetch(
                 `${API_BASE_URL}/api/watchlist/${movieId}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                { method: 'DELETE' }
             )
 
             if (!response.ok) {

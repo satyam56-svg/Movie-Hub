@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Reviews from './Reviews'
 import API_BASE_URL from '../api/config'
+import { authFetch } from '../api/authFetch'
 
 function MoviePoster({ movie }) {
     const [imgError, setImgError] = useState(false)
@@ -70,21 +71,11 @@ function MovieModal({ movie, onClose }) {
 
                 const [favoriteResponse, watchlistResponse] =
                     await Promise.all([
-                        fetch(
-                            `${API_BASE_URL}/api/favorites/${movie.id}/check`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                },
-                            }
+                        authFetch(
+                            `${API_BASE_URL}/api/favorites/${movie.id}/check`
                         ),
-                        fetch(
-                            `${API_BASE_URL}/api/watchlist/${movie.id}/check`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                },
-                            }
+                        authFetch(
+                            `${API_BASE_URL}/api/watchlist/${movie.id}/check`
                         ),
                     ])
 
@@ -121,14 +112,9 @@ function MovieModal({ movie, onClose }) {
             setFavoriteLoading(true)
             setFavoriteError('')
 
-            const response = await fetch(
+            const response = await authFetch(
                 `${API_BASE_URL}/api/favorites/${movie.id}`,
-                {
-                    method: isFavorite ? 'DELETE' : 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                { method: isFavorite ? 'DELETE' : 'POST' }
             )
 
             if (!response.ok) {
@@ -169,14 +155,9 @@ function MovieModal({ movie, onClose }) {
             setWatchlistLoading(true)
             setWatchlistError('')
 
-            const response = await fetch(
+            const response = await authFetch(
                 `${API_BASE_URL}/api/watchlist/${movie.id}`,
-                {
-                    method: isWatchlist ? 'DELETE' : 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                { method: isWatchlist ? 'DELETE' : 'POST' }
             )
 
             if (!response.ok) {

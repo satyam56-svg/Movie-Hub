@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import API_BASE_URL from '../api/config'
+import { authFetch } from '../api/authFetch'
 
 function Profile() {
     const [profile, setProfile] = useState(null)
@@ -17,13 +18,8 @@ function Profile() {
             }
 
             try {
-                const response = await fetch(
-                    `${API_BASE_URL}/api/users/profile`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
+                const response = await authFetch(
+                    `${API_BASE_URL}/api/users/profile`
                 )
 
                 if (!response.ok) {
