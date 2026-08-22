@@ -36,10 +36,12 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
+        configuration.setAllowedOriginPatterns(
                 List.of(
                         "http://localhost:5173",
-                        "https://movie-hub-rho-nine.vercel.app"
+                        "http://localhost:3000",
+                        "https://*.vercel.app",
+                        "https://*.onrender.com"
                 )
         );
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import MovieCard from './MovieCard'
 import MovieModal from './MovieModal'
+import SkeletonCard from './SkeletonCard'
+import { useDebounce } from '../hooks/useDebounce'
 import API_BASE_URL from '../api/config'
 
 function MovieSection({ searchTerm, onSearchChange }) {
@@ -12,7 +14,11 @@ function MovieSection({ searchTerm, onSearchChange }) {
     const [page, setPage] = useState(0)
     const [totalPages, setTotalPages] = useState(0)
 
+    const debouncedSearchTerm = useDebounce(searchTerm, 300)
+
     useEffect(() => {
+        let isSubscribed = true
+
         const fetchMovies = async () => {
             setLoading(true)
             setError('')
@@ -20,8 +26,8 @@ function MovieSection({ searchTerm, onSearchChange }) {
             try {
                 const params = new URLSearchParams()
 
-                if (searchTerm.trim()) {
-                    params.append('search', searchTerm.trim())
+                if (debouncedSearchTerm.trim()) {
+                    params.append('search', debouncedSearchTerm.trim())
                 }
 
                 if (selectedGenre) {
@@ -36,9 +42,7 @@ function MovieSection({ searchTerm, onSearchChange }) {
                 const response = await fetch(
                     `${API_BASE_URL}/api/movies?${params.toString()}`,
                     {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
+                        headers: token ? { Authorization: `Bearer ${token}` } : {},
                     }
                 )
 
@@ -48,19 +52,29 @@ function MovieSection({ searchTerm, onSearchChange }) {
 
                 const data = await response.json()
 
-                setMovies(data.content || [])
-                setTotalPages(data.totalPages || 0)
+                if (isSubscribed) {
+                    setMovies(data.content || [])
+                    setTotalPages(data.totalPages || 0)
+                }
             } catch (err) {
-                console.error('Movie API error:', err)
-                setError('Unable to load movies')
-                setMovies([])
+                if (isSubscribed) {
+                    console.error('Movie API error:', err)
+                    setError('Unable to load movies right now. Please try again.')
+                    setMovies([])
+                }
             } finally {
-                setLoading(false)
+                if (isSubscribed) {
+                    setLoading(false)
+                }
             }
         }
 
         fetchMovies()
-    }, [searchTerm, selectedGenre, page])
+
+        return () => {
+            isSubscribed = false
+        }
+    }, [debouncedSearchTerm, selectedGenre, page])
 
     const handleSearchChange = (e) => {
         onSearchChange(e.target.value)
@@ -69,6 +83,12 @@ function MovieSection({ searchTerm, onSearchChange }) {
 
     const handleGenreChange = (e) => {
         setSelectedGenre(e.target.value)
+        setPage(0)
+    }
+
+    const handleClearFilters = () => {
+        onSearchChange('')
+        setSelectedGenre('')
         setPage(0)
     }
 
@@ -82,7 +102,7 @@ function MovieSection({ searchTerm, onSearchChange }) {
                 <div className="movie-filters">
                     <input
                         type="text"
-                        placeholder="Search movies..."
+                        placeholder="Search movies by title or director..."
                         value={searchTerm}
                         onChange={handleSearchChange}
                     />
@@ -100,37 +120,61 @@ function MovieSection({ searchTerm, onSearchChange }) {
                         <option value="Horror">Horror</option>
                         <option value="Animation">Animation</option>
                     </select>
+
+                    {(searchTerm || selectedGenre) && (
+                        <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={handleClearFilters}
+                            style={{ height: '44px', whiteSpace: 'nowrap' }}
+                        >
+                            <i className="fas fa-times"></i> Clear Filters
+                        </button>
+                    )}
                 </div>
 
-                {loading && (
-                    <div className="loading">
-                        <i className="fas fa-spinner fa-spin"></i>
-                        <span>Loading movies...</span>
+                {loading ? (
+                    <div className="movies-grid">
+                        {Array.from({ length: 10 }).map((_, index) => (
+                            <SkeletonCard key={`skeleton-${index}`} />
+                        ))}
                     </div>
-                )}
-
-                {error && (
-                    <div className="loading">
-                        {error}
+                ) : error ? (
+                    <div className="loading" style={{ borderStyle: 'solid' }}>
+                        <i className="fas fa-exclamation-circle" style={{ color: 'var(--accent-red)' }}></i>
+                        <span>{error}</span>
+                        <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={() => setPage(0)}
+                            style={{ marginTop: '0.5rem' }}
+                        >
+                            Retry
+                        </button>
                     </div>
-                )}
-
-                {!loading && !error && (
+                ) : movies.length === 0 ? (
+                    <div className="loading" style={{ borderStyle: 'solid' }}>
+                        <i className="fas fa-film" style={{ opacity: 0.5 }}></i>
+                        <span>No movies found matching your search criteria.</span>
+                        <button
+                            type="button"
+                            className="btn-primary"
+                            onClick={handleClearFilters}
+                            style={{ marginTop: '0.5rem' }}
+                        >
+                            Reset Filters
+                        </button>
+                    </div>
+                ) : (
                     <>
                         <div className="movies-grid">
-                            {movies.length === 0 ? (
-                                <div className="loading">
-                                    No movies found
-                                </div>
-                            ) : (
-                                movies.map((movie, index) => (
-                                    <MovieCard
-                                        key={`${movie.id || movie.title}-${index}`}
-                                        movie={movie}
-                                        onMovieClick={setSelectedMovie}
-                                    />
-                                ))
-                            )}
+                            {movies.map((movie, index) => (
+                                <MovieCard
+                                    key={`${movie.id || movie.title}-${index}`}
+                                    movie={movie}
+                                    onMovieClick={setSelectedMovie}
+                                />
+                            ))}
                         </div>
 
                         {totalPages > 1 && (
@@ -138,9 +182,7 @@ function MovieSection({ searchTerm, onSearchChange }) {
                                 <button
                                     className="btn-secondary"
                                     disabled={page === 0}
-                                    onClick={() =>
-                                        setPage((prev) => prev - 1)
-                                    }
+                                    onClick={() => setPage((prev) => prev - 1)}
                                 >
                                     Previous
                                 </button>
@@ -151,12 +193,8 @@ function MovieSection({ searchTerm, onSearchChange }) {
 
                                 <button
                                     className="btn-secondary"
-                                    disabled={
-                                        page >= totalPages - 1
-                                    }
-                                    onClick={() =>
-                                        setPage((prev) => prev + 1)
-                                    }
+                                    disabled={page >= totalPages - 1}
+                                    onClick={() => setPage((prev) => prev + 1)}
                                 >
                                     Next
                                 </button>

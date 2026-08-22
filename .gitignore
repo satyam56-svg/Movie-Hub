@@ -8,10 +8,6 @@ __pycache__/
 venv/
 ENV/
 
-# Data files (optional - uncomment if you don't want to commit data)
-# data/movie_data.json
-# data/movie_data.csv
-
 # IDE
 .vscode/
 .idea/
@@ -20,16 +16,24 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Temporary files
+# Temporary & Log files
 *.log
 *.tmp
+.gemini/
 
-# Old structure (to be removed)
-Movie-Hub/
-
-# Node / Vite
+# Node & Vite Build Artifacts
 node_modules/
 dist/
+.vite/
 .env
-.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 !.env.example
+
+# Maven & Java Build Artifacts
+target/
+*.class
+*.jar
+*.war

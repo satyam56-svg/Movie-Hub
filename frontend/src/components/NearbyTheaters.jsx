@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-
-const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
-
-const SEARCH_RADIUS = 15000
+import API_BASE_URL from '../api/config'
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371

@@ -228,193 +228,197 @@ function MovieModal({ movie, onClose }) {
                 <div className="movie-detail-header">
                     <MoviePoster key={movie.id} movie={movie} />
 
-                    <div className="movie-detail-meta">
-                        <span className="meta-item">
-                            <i className="fas fa-calendar"></i>{' '}
-                            {movie.releaseYear ?? 'Not Available'}
-                        </span>
-                        <span className="meta-item">
-                            <i className="fas fa-clock"></i>{' '}
-                            {movie.runtime || 'Not Available'}
-                        </span>
-                        <span className="meta-item">
-                            <i className="fas fa-tag"></i>{' '}
-                            {movie.genre || 'Not Available'}
-                        </span>
-                        <span className="meta-item">
-                            <i className="fas fa-user-tie"></i>{' '}
-                            Director: {movie.director || 'Not Available'}
-                        </span>
-                    </div>
+                    <div className="movie-detail-info">
+                        <h2>{movie.title}</h2>
 
-                    {movie.cast ? (
-                        <p
-                            className="movie-detail-description"
-                            style={{ marginBottom: '0.75rem', fontSize: '0.9rem' }}
-                        >
-                            <strong>Cast:</strong>{' '}
-                            {movie.cast
-                                .split(',')
-                                .map(actor => actor.trim())
-                                .filter(Boolean)
-                                .map((actor, index, actors) => (
-                                    <span key={`${actor}-${index}`}>
-                                        <a
-                                            href={`https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(actor)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{
-                                                color: '#d4af37',
-                                                textDecoration: 'none',
-                                                cursor: 'pointer'
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.textDecoration = 'underline';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.textDecoration = 'none';
-                                            }}
-                                        >
-                                            {actor}
-                                        </a>
-                                        {index < actors.length - 1 && ', '}
-                                    </span>
-                                ))}
-                        </p>
-                    ) : (
-                        <p
-                            className="movie-detail-description"
-                            style={{ marginBottom: '0.75rem', fontSize: '0.9rem' }}
-                        >
-                            <strong>Cast:</strong> Not Available
-                        </p>
-                    )}
-
-                    {movie.description && (
-                        <p className="movie-detail-description">
-                            {movie.description}
-                        </p>
-                    )}
-
-                    {/* Ratings Section */}
-                    <div className="ratings-comparison">
-                        <h3>Ratings Breakdown</h3>
-                        <div className="ratings-grid">
-                            {movie.imdbRating != null && (
-                                <div className="rating-source">
-                                    <span>IMDb Score</span>
-                                    <strong>★ {movie.imdbRating}</strong>
-                                </div>
-                            )}
-
-                            {movie.tomatometer != null && (
-                                <div className="rating-source">
-                                    <span>Tomatometer</span>
-                                    <strong style={{ color: 'var(--accent-red)' }}>
-                                        🍅 {movie.tomatometer}
-                                    </strong>
-                                </div>
-                            )}
-
-                            {movie.popcornmeter != null && (
-                                <div className="rating-source">
-                                    <span>Popcornmeter</span>
-                                    <strong>🍿 {movie.popcornmeter}</strong>
-                                </div>
-                            )}
-
-                            {movie.metacriticScore != null && (
-                                <div className="rating-source">
-                                    <span>Metacritic</span>
-                                    <strong style={{ color: 'var(--accent-blue)' }}>
-                                        {movie.metacriticScore}/100
-                                    </strong>
-                                </div>
-                            )}
-
-                            {movie.metacriticUserScore != null && (
-                                <div className="rating-source">
-                                    <span>Metacritic User</span>
-                                    <strong>{movie.metacriticUserScore}</strong>
-                                </div>
-                            )}
-
-                            {movie.userRating != null && movie.userRating > 0 && (
-                                <div className="rating-source">
-                                    <span>MovieHub User</span>
-                                    <strong>⭐ {movie.userRating}/5</strong>
-                                </div>
-                            )}
+                        <div className="movie-detail-meta">
+                            <span className="meta-item">
+                                <i className="fas fa-calendar"></i>{' '}
+                                {movie.releaseYear ?? 'Not Available'}
+                            </span>
+                            <span className="meta-item">
+                                <i className="fas fa-clock"></i>{' '}
+                                {movie.runtime || 'Not Available'}
+                            </span>
+                            <span className="meta-item">
+                                <i className="fas fa-tag"></i>{' '}
+                                {movie.genre || 'Not Available'}
+                            </span>
+                            <span className="meta-item">
+                                <i className="fas fa-user-tie"></i>{' '}
+                                Director: {movie.director || 'Not Available'}
+                            </span>
                         </div>
-                    </div>
 
-                    {/* Action Buttons & External Source Links */}
-                    <div className="movie-actions">
-                        <button
-                            type="button"
-                            className="btn-primary"
-                            onClick={handleFavoriteToggle}
-                            disabled={favoriteLoading}
-                        >
-                            <i className={isFavorite ? 'fas fa-heart' : 'far fa-heart'}></i>
-                            {favoriteLoading
-                                ? 'Updating...'
-                                : isFavorite
-                                    ? 'Remove Favorites'
-                                    : 'Add to Favorites'}
-                        </button>
-
-                        <button
-                            type="button"
-                            className="btn-secondary"
-                            onClick={handleWatchlistToggle}
-                            disabled={watchlistLoading}
-                        >
-                            <i className={isWatchlist ? 'fas fa-bookmark' : 'far fa-bookmark'}></i>
-                            {watchlistLoading
-                                ? 'Updating...'
-                                : isWatchlist
-                                    ? 'Remove Watchlist'
-                                    : 'Add to Watchlist'}
-                        </button>
-
-                        {/* External Links */}
-                        {movie.rtUrl && (
-                            <a
-                                href={movie.rtUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="ext-link-btn rt"
+                        {movie.cast ? (
+                            <p
+                                className="movie-detail-description"
+                                style={{ marginBottom: '0.75rem', fontSize: '0.9rem' }}
                             >
-                                <i className="fas fa-external-link-alt"></i> Rotten Tomatoes
-                            </a>
+                                <strong>Cast:</strong>{' '}
+                                {movie.cast
+                                    .split(',')
+                                    .map(actor => actor.trim())
+                                    .filter(Boolean)
+                                    .map((actor, index, actors) => (
+                                        <span key={`${actor}-${index}`}>
+                                            <a
+                                                href={`https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(actor)}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    color: 'var(--accent-gold)',
+                                                    textDecoration: 'none',
+                                                    cursor: 'pointer'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.textDecoration = 'underline';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.textDecoration = 'none';
+                                                }}
+                                            >
+                                                {actor}
+                                            </a>
+                                            {index < actors.length - 1 && ', '}
+                                        </span>
+                                    ))}
+                            </p>
+                        ) : (
+                            <p
+                                className="movie-detail-description"
+                                style={{ marginBottom: '0.75rem', fontSize: '0.9rem' }}
+                            >
+                                <strong>Cast:</strong> Not Available
+                            </p>
                         )}
 
-                        {movie.metacriticUrl && (
-                            <a
-                                href={movie.metacriticUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="ext-link-btn metacritic"
-                            >
-                                <i className="fas fa-external-link-alt"></i> Metacritic
-                            </a>
+                        {movie.description && (
+                            <p className="movie-detail-description">
+                                {movie.description}
+                            </p>
                         )}
+
+                        {/* Ratings Section */}
+                        <div className="ratings-comparison">
+                            <h3>Ratings Breakdown</h3>
+                            <div className="ratings-grid">
+                                {movie.imdbRating != null && (
+                                    <div className="rating-source">
+                                        <span>IMDb Score</span>
+                                        <strong>★ {movie.imdbRating}</strong>
+                                    </div>
+                                )}
+
+                                {movie.tomatometer != null && (
+                                    <div className="rating-source">
+                                        <span>Tomatometer</span>
+                                        <strong style={{ color: 'var(--accent-red)' }}>
+                                            🍅 {movie.tomatometer}
+                                        </strong>
+                                    </div>
+                                )}
+
+                                {movie.popcornmeter != null && (
+                                    <div className="rating-source">
+                                        <span>Popcornmeter</span>
+                                        <strong>🍿 {movie.popcornmeter}</strong>
+                                    </div>
+                                )}
+
+                                {movie.metacriticScore != null && (
+                                    <div className="rating-source">
+                                        <span>Metacritic</span>
+                                        <strong style={{ color: 'var(--accent-blue)' }}>
+                                            {movie.metacriticScore}/100
+                                        </strong>
+                                    </div>
+                                )}
+
+                                {movie.metacriticUserScore != null && (
+                                    <div className="rating-source">
+                                        <span>Metacritic User</span>
+                                        <strong>{movie.metacriticUserScore}</strong>
+                                    </div>
+                                )}
+
+                                {movie.userRating != null && movie.userRating > 0 && (
+                                    <div className="rating-source">
+                                        <span>MovieHub User</span>
+                                        <strong>⭐ {movie.userRating}/5</strong>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Action Buttons & External Source Links */}
+                        <div className="movie-actions">
+                            <button
+                                type="button"
+                                className="btn-primary"
+                                onClick={handleFavoriteToggle}
+                                disabled={favoriteLoading}
+                            >
+                                <i className={isFavorite ? 'fas fa-heart' : 'far fa-heart'}></i>
+                                {favoriteLoading
+                                    ? 'Updating...'
+                                    : isFavorite
+                                        ? 'Remove Favorites'
+                                        : 'Add to Favorites'}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn-secondary"
+                                onClick={handleWatchlistToggle}
+                                disabled={watchlistLoading}
+                            >
+                                <i className={isWatchlist ? 'fas fa-bookmark' : 'far fa-bookmark'}></i>
+                                {watchlistLoading
+                                    ? 'Updating...'
+                                    : isWatchlist
+                                        ? 'Remove Watchlist'
+                                        : 'Add to Watchlist'}
+                            </button>
+
+                            {/* External Links */}
+                            {movie.rtUrl && (
+                                <a
+                                    href={movie.rtUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="ext-link-btn rt"
+                                >
+                                    <i className="fas fa-external-link-alt"></i> Rotten Tomatoes
+                                </a>
+                            )}
+
+                            {movie.metacriticUrl && (
+                                <a
+                                    href={movie.metacriticUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="ext-link-btn metacritic"
+                                >
+                                    <i className="fas fa-external-link-alt"></i> Metacritic
+                                </a>
+                            )}
+                        </div>
+
+                        {watchlistError && (
+                            <div className="auth-error" style={{ marginBottom: '1rem' }}>
+                                {watchlistError}
+                            </div>
+                        )}
+
+                        {favoriteError && (
+                            <div className="auth-error" style={{ marginBottom: '1rem' }}>
+                                {favoriteError}
+                            </div>
+                        )}
+
+                        <Reviews movieId={movie.id} />
                     </div>
-
-                    {watchlistError && (
-                        <div className="auth-error" style={{ marginBottom: '1rem' }}>
-                            {watchlistError}
-                        </div>
-                    )}
-
-                    {favoriteError && (
-                        <div className="auth-error" style={{ marginBottom: '1rem' }}>
-                            {favoriteError}
-                        </div>
-                    )}
-
-                    <Reviews movieId={movie.id} />
                 </div>
             </div>
         </div>
