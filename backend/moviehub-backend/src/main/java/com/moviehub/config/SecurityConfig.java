@@ -112,6 +112,13 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
+                        // Public nearby theater search
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/theaters"
+                        )
+                        .permitAll()
+
                         // Admin-only movie management
                         .requestMatchers(
                                 HttpMethod.POST,

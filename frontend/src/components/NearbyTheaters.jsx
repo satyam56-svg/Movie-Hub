@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
-const OVERPASS_ENDPOINTS = [
-    'https://overpass-api.de/api/interpreter',
-    'https://overpass.kumi.systems/api/interpreter',
-    'https://overpass.private.coffee/api/interpreter',
-]
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 const SEARCH_RADIUS = 15000
 
@@ -127,119 +124,93 @@ function NearbyTheaters() {
         setLoading(true)
         setError('')
 
-        const query = `
-            [out:json][timeout:25];
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/api/theaters?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`
+            )
 
-            (
-                nwr["amenity"="cinema"](around:${SEARCH_RADIUS},${lat},${lon});
-                nwr["amenity"="theatre"](around:${SEARCH_RADIUS},${lat},${lon});
-            );
-
-            out center tags;
-        `
-
-        let lastError = null
-
-        for (const endpoint of OVERPASS_ENDPOINTS) {
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `data=${encodeURIComponent(query)}`,
-                })
-
-                if (!response.ok) {
-                    throw new Error(
-                        `Overpass returned HTTP ${response.status}`
-                    )
-                }
-
-                const data = await response.json()
-
-                const results = (data.elements || [])
-                    .map((element) => {
-                        const coordinates = getCoordinates(element)
-
-                        if (!coordinates) {
-                            return null
-                        }
-
-                        const tags = element.tags || {}
-
-                        const name =
-                            tags.name ||
-                            tags['name:en'] ||
-                            tags['official_name']
-
-                        if (!name) {
-                            return null
-                        }
-
-                        const distance = calculateDistance(
-                            lat,
-                            lon,
-                            coordinates.lat,
-                            coordinates.lon
-                        )
-
-                        return {
-                            id: `${element.type}-${element.id}`,
-                            name,
-                            latitude: coordinates.lat,
-                            longitude: coordinates.lon,
-                            distance,
-                            address: getAddress(tags),
-                            website: normalizeWebsite(getWebsite(tags)),
-                            phone:
-                                tags.phone ||
-                                tags['contact:phone'] ||
-                                '',
-                            type: tags.amenity === 'cinema'
-                                ? 'Cinema'
-                                : 'Theatre',
-                        }
-                    })
-                    .filter(Boolean)
-                    .sort((a, b) => a.distance - b.distance)
-
-                const uniqueTheaters = []
-                const seen = new Set()
-
-                for (const theater of results) {
-                    const key = `${theater.name
-                        .toLowerCase()
-                        .replace(/\s+/g, ' ')
-                        .trim()}-${theater.latitude.toFixed(4)}-${theater.longitude.toFixed(4)}`
-
-                    if (!seen.has(key)) {
-                        seen.add(key)
-                        uniqueTheaters.push(theater)
-                    }
-                }
-
-                setTheaters(uniqueTheaters.slice(0, 20))
-                setLoading(false)
-                return
-            } catch (err) {
-                console.error(
-                    `Theater search failed for ${endpoint}:`,
-                    err
+            if (!response.ok) {
+                throw new Error(
+                    `Theater API returned HTTP ${response.status}`
                 )
-
-                lastError = err
             }
+
+            const data = await response.json()
+
+            const results = (data.elements || [])
+                .map((element) => {
+                    const coordinates = getCoordinates(element)
+
+                    if (!coordinates) {
+                        return null
+                    }
+
+                    const tags = element.tags || {}
+
+                    const name =
+                        tags.name ||
+                        tags['name:en'] ||
+                        tags['official_name']
+
+                    if (!name) {
+                        return null
+                    }
+
+                    const distance = calculateDistance(
+                        lat,
+                        lon,
+                        coordinates.lat,
+                        coordinates.lon
+                    )
+
+                    return {
+                        id: `${element.type}-${element.id}`,
+                        name,
+                        latitude: coordinates.lat,
+                        longitude: coordinates.lon,
+                        distance,
+                        address: getAddress(tags),
+                        website: normalizeWebsite(getWebsite(tags)),
+                        phone:
+                            tags.phone ||
+                            tags['contact:phone'] ||
+                            '',
+                        type: tags.amenity === 'cinema'
+                            ? 'Cinema'
+                            : 'Theatre',
+                    }
+                })
+                .filter(Boolean)
+                .sort((a, b) => a.distance - b.distance)
+
+            const uniqueTheaters = []
+            const seen = new Set()
+
+            for (const theater of results) {
+                const key = `${theater.name
+                    .toLowerCase()
+                    .replace(/\s+/g, ' ')
+                    .trim()}-${theater.latitude.toFixed(4)}-${theater.longitude.toFixed(4)}`
+
+                if (!seen.has(key)) {
+                    seen.add(key)
+                    uniqueTheaters.push(theater)
+                }
+            }
+
+            setTheaters(uniqueTheaters.slice(0, 20))
+        } catch (err) {
+            console.error('Theater search failed:', err)
+
+            setTheaters([])
+            setError(
+                'Unable to load nearby theaters right now. Please try again.'
+            )
+        } finally {
+            setLoading(false)
         }
-
-        console.error('All theater providers failed:', lastError)
-
-        setTheaters([])
-        setError(
-            'Unable to load nearby theaters right now. Please try again.'
-        )
-        setLoading(false)
     }, [])
+
 
     const detectLocation = useCallback(() => {
         setLoading(true)
