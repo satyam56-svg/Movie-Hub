@@ -10,8 +10,8 @@ public class TheaterController {
 
     private final RestClient restClient;
 
-    public TheaterController(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.build();
+    public TheaterController() {
+        this.restClient = RestClient.create();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
