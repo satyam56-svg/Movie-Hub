@@ -1,29 +1,37 @@
-# 🎬 MovieHub — Full-Stack Cinematic Movie Rating & Discovery Platform
+# 🎬 MovieHub — Full-Stack Cinematic Movie Discovery & Rating Platform
 
-![React 18](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Vite 5](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Spring Boot 3](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![React 19](https://img.shields.io/badge/React-19.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Vite 8](https://img.shields.io/badge/Vite-8.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Spring Boot 4](https://img.shields.io/badge/Spring_Boot-4.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Java 17+](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Python 3](https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-> **MovieHub** is a production-grade, full-stack movie rating, review, and discovery platform built with a **React 18 + Vite** client and a **Java 17 + Spring Boot** RESTful backend. It features a cinematic dark mode design system, 300ms debounced search, animated shimmer skeleton loaders, location-aware theater discovery, Spring Security JWT authentication, and relational database persistence.
+> **MovieHub** is a production-grade, full-stack movie rating, review, and discovery platform built with a **React 19 + Vite** client, a **Java 17 + Spring Boot 4** RESTful backend, and an automated multi-source **Python Data Scraping Pipeline**. It features a cinematic dark mode design system, 300ms debounced search, animated shimmer skeleton loaders, location-aware theater discovery, showtimes & streaming links, admin dashboards, Spring Security JWT authentication, and relational database persistence.
 
 ---
 
 ## ✨ Feature Highlights
 
-### 🎨 Frontend Layer
-- 🌙 **Cinematic Dark Theme**: Custom CSS variable design tokens (`#0b0f19` base, `#1f2937` surface) featuring glowing amber rating badges (`#f59e0b`) and glassmorphic header/modal backdrops (`backdrop-filter: blur(16px)`).
-- ⚡ **300ms Debounced Search**: High-performance `useDebounce` hook delays search query execution by 300ms to reduce unneeded backend traffic.
-- 💀 **Shimmer Skeleton Loaders**: Animated loading card placeholders (`SkeletonCard.jsx`) replace raw text spinners for fluid, layout-shift-free rendering.
-- 📍 **Location-Aware Theater Finder**: Reverse geocoding and OpenStreetMap/Overpass integration for discovering nearby cinemas with interactive distance indicators and Google Maps directions.
-- 📱 **Fluid Responsive Grid**: Mobile-first CSS Grid (`grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))`) ensuring 100% responsiveness across screens from 375px to 4K.
+### 🎨 Frontend Layer (React 19 + Vite)
+- 🌙 **Cinematic Dark Theme**: Custom CSS design tokens (`#0b0f19` base, `#1f2937` surface) featuring glowing amber rating badges (`#f59e0b`) and glassmorphic backdrops (`backdrop-filter: blur(16px)`).
+- ⚡ **300ms Debounced Search**: High-performance `useDebounce` custom hook delays search query execution by 300ms to reduce unnecessary backend network calls.
+- 💀 **Shimmer Skeleton Loaders**: Fluid, layout-shift-free loading card placeholders (`SkeletonCard.jsx`).
+- 📍 **Location-Aware Cinema Finder**: Reverse geocoding & OpenStreetMap/Overpass API integration for discovering nearby theaters with interactive distance indicators and direct Google Maps directions (`NearbyTheaters.jsx`).
+- 🎟️ **Showtimes & Streaming Options**: Integrated theater showtimes scheduling (`Showtimes.jsx`) and streaming availability links (`WhereToWatch.jsx`).
+- 👑 **Admin Management Portal**: Comprehensive admin dashboard for movie catalog administration, user moderation, and review management (`AdminDashboard.jsx`).
+- 🔐 **User Accounts & Personalization**: Authentication modal workflows, custom watchlists (`Watchlist.jsx`), favorite collections (`Favorites.jsx`), user reviews (`MyReviews.jsx`), and profile management (`Profile.jsx`).
 
-### ⚙️ Backend Layer
-- 🔐 **Spring Security & JWT**: Stateless token-based authentication (`JwtService`) securing user favorites, watchlists, profile management, and review submissions.
-- 🗄️ **Spring Data JPA & Hibernate**: Relational persistence mapping using Spring Data JPA repositories with PostgreSQL or zero-config H2 database fallback support.
-- 🌐 **RESTful Web Services**: Clean HTTP REST endpoints handling movie catalog queries, pagination, multi-criteria filtering, user accounts, and reviews.
-- 🔒 **Centralized CORS Policies**: Pre-configured cross-origin resource sharing headers enabling seamless communication with the React frontend client.
+### ⚙️ Backend Layer (Java 17 + Spring Boot 4)
+- 🔐 **Spring Security & JWT**: Stateless token-based authentication (`JwtService`) securing user watchlists, favorites, profile management, admin endpoints, and review submissions.
+- 🗄️ **Spring Data JPA & Hibernate**: Relational database persistence mapping with PostgreSQL driver and zero-config H2 database in-memory fallback.
+- 🌐 **RESTful Web Services**: Clean HTTP REST endpoints for movie catalog queries, pagination, multi-criteria filtering, user authentication, review CRUD, and cinema discoveries.
+- 🛡️ **Defensive Error Handling & CORS**: Pre-configured cross-origin resource sharing policies enabling seamless API integration with the React client.
+
+### 🕷️ Data Scraping & Pipeline Tier (Python 3)
+- 🤖 **Automated Multi-Source Pipeline**: Automated extraction from IMDb, Rotten Tomatoes, and Metacritic (`pipeline.py`).
+- 🌐 **Headless Browser & Dynamic Parsing**: Powered by `Playwright`, `BeautifulSoup4`, `lxml`, and `requests`.
+- ✅ **Dataset Integrity Validator**: Built-in verification script (`validate_dataset.py`) for data validation before backend initialization.
 
 ---
 
@@ -31,7 +39,7 @@
 
 ```
 +-----------------------------------------------------------------------+
-|                       React 18 + Vite Frontend                        |
+|                       React 19 + Vite Frontend                        |
 |                       (http://localhost:5173)                         |
 +-----------------------------------+-----------------------------------+
                                     |
@@ -40,7 +48,7 @@
 +-----------------------------------------------------------------------+
 |                      Spring Boot REST API Backend                     |
 |                       (http://localhost:8080)                         |
-|   [Spring Security + JWT] [Spring Data JPA] [Jackson JSON Engine]    |
+|   [Spring Security + JWT] [Spring Data JPA] [Jackson JSON Engine]     |
 +-----------------------------------+-----------------------------------+
                                     |
                                     | JDBC / Hibernate ORM
@@ -49,63 +57,92 @@
 |                      Relational Database Layer                        |
 |                  (H2 In-Memory / PostgreSQL Database)                 |
 +-----------------------------------------------------------------------+
+                                    ^
+                                    | Data Ingestion (movies_integrated.json)
++-----------------------------------------------------------------------+
+|                   Python Multi-Source Data Pipeline                   |
+|               (IMDb + Rotten Tomatoes + Metacritic Scrapers)          |
++-----------------------------------------------------------------------+
 ```
 
-### Stack Summary
+### Tech Stack Summary
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Frontend UI** | React 18, Vite | Component-based UI library & fast development server |
-| **Styling** | Custom CSS Variables / Tokens | Cinematic dark mode tokens, CSS Grid, Glassmorphism FX |
-| **Backend API** | Java 17+, Spring Boot 3.x | Enterprise REST web service framework |
+| **Frontend UI** | React 19, Vite 8 | Component-based UI library & ultra-fast dev server |
+| **Styling** | Custom CSS3 Variables & Tokens | Cinematic dark mode, CSS Grid, Glassmorphism FX |
+| **Backend API** | Java 17+, Spring Boot 4.x | Enterprise RESTful web service framework |
 | **Security** | Spring Security, JJWT (0.12.x) | Stateless JWT authentication & authorization |
 | **Database** | PostgreSQL / H2 Database | Relational database persistence & dev fallback |
 | **ORM** | Spring Data JPA / Hibernate | Object-Relational Mapping & repository abstraction |
+| **Data Scraping** | Python 3, Playwright, BS4, lxml | Multi-source scraping pipeline (IMDb, RT, Metacritic) |
 
 ---
 
 ## 📁 Repository Structure
 
 ```
-Movie-Hub/
+Movie_rating/
 ├── backend/
-│   └── moviehub-backend/
+│   └── moviehub-backend/               # Java 17 + Spring Boot 4 REST Backend Service
 │       ├── src/
 │       │   ├── main/
 │       │   │   ├── java/com/moviehub/
-│       │   │   │   ├── config/          # Security & CORS configuration
-│       │   │   │   ├── controller/      # REST API Controllers (Movie, Auth, Review)
+│       │   │   │   ├── config/          # Security, CORS & Web Configuration
+│       │   │   │   ├── controller/      # API Controllers (Movie, Auth, Review, Theater, Admin, etc.)
 │       │   │   │   ├── model/           # JPA Entities (Movie, User, Review)
-│       │   │   │   ├── repository/     # Spring Data JPA Repositories
-│       │   │   │   ├── security/       # JwtService & Auth Filters
-│       │   │   │   └── service/        # Business Logic & Seeders
+│       │   │   │   ├── repository/      # Spring Data JPA Repositories
+│       │   │   │   ├── security/        # JwtService & Auth Filters
+│       │   │   │   └── service/         # Business Logic & Initial Data Seeders
 │       │   │   └── resources/
-│       │   │       ├── application.properties # Server & DB Configuration
-│       │   │       └── movies_integrated.json # Initial Movie Dataset
+│       │   │       ├── application.properties # Application & Database Configuration
+│       │   │       └── movies_integrated.json # Initial Movie Catalog Dataset
+│       ├── Dockerfile                  # Container Deployment Configuration
 │       ├── pom.xml                     # Maven Dependencies Manifest
 │       └── mvnw.cmd                    # Maven Wrapper Executable
-├── frontend/
+├── frontend/                           # React 19 + Vite Web Application
 │   ├── src/
 │   │   ├── api/
 │   │   │   └── config.js              # REST API Base URL Endpoint Config
 │   │   ├── components/                # React Components
+│   │   │   ├── ActorsSection.jsx      # Cast & Actor Overview
+│   │   │   ├── AdminDashboard.jsx     # Catalog & User Moderation Dashboard
 │   │   │   ├── ErrorBoundary.jsx      # Top-Level React Error Boundary
-│   │   │   ├── Header.jsx             # Glassmorphic Sticky Header
+│   │   │   ├── Favorites.jsx          # User Favorite Movies Page
+│   │   │   ├── GenresSection.jsx       # Genre Browsing & Filtering
+│   │   │   ├── Header.jsx             # Glassmorphic Sticky Navigation Header
+│   │   │   ├── Hero.jsx               # Featured Banner Display
+│   │   │   ├── InCinemas.jsx          # Currently Playing Movies
+│   │   │   ├── Login.jsx              # User Authentication Modal
 │   │   │   ├── MovieCard.jsx          # Movie Card Component
 │   │   │   ├── MovieModal.jsx         # Movie Details & Ratings Breakdown Modal
 │   │   │   ├── MovieSection.jsx       # Grid Catalog & Pagination
-│   │   │   ├── NearbyTheaters.jsx     # Geolocation Cinema Finder
-│   │   │   ├── Reviews.jsx            # User Reviews CRUD
-│   │   │   └── SkeletonCard.jsx       # Animated Shimmer Loading Placeholder
+│   │   │   ├── MyReviews.jsx          # User Submitted Reviews
+│   │   │   ├── NearbyTheaters.jsx     # Geolocation Cinema Discovery
+│   │   │   ├── Profile.jsx            # User Profile & Preferences
+│   │   │   ├── Register.jsx           # User Registration Form
+│   │   │   ├── Reviews.jsx            # Movie Community Reviews & Ratings CRUD
+│   │   │   ├── Showtimes.jsx          # Cinema Showtimes Scheduler
+│   │   │   ├── SkeletonCard.jsx       # Animated Shimmer Loading Placeholder
+│   │   │   ├── Watchlist.jsx          # User Watchlist Page
+│   │   │   └── WhereToWatch.jsx       # Streaming Availability Links
 │   │   ├── hooks/
-│   │   │   └── useDebounce.js         # Custom 300ms Debounce Hook
-│   │   ├── App.css                    # Streamlined DRY Component Stylesheet
+│   │   │   └── useDebounce.js         # Custom 300ms Search Debounce Hook
+│   │   ├── App.css                    # Component Stylesheet
 │   │   ├── index.css                  # Global CSS Variables & Design Tokens
-│   │   ├── App.jsx                    # Application Container
+│   │   ├── App.jsx                    # Core Application Container
 │   │   └── main.jsx                   # Entry Point Wrapped in ErrorBoundary
-│   ├── package.json                   # Node Dependencies & Scripts
-│   └── vite.config.js                 # Vite Bundler Settings
-└── README.md                          # Full-Stack Documentation
+│   ├── package.json                   # Node Dependencies & Build Scripts
+│   └── vite.config.js                 # Vite Configuration
+├── scraper/                            # Python Scraping Pipeline
+│   ├── rt_scraper.py                  # Rotten Tomatoes Scraper
+│   ├── metacritic_scraper.py          # Metacritic Ratings Scraper
+│   ├── pipeline.py                    # Data Scraping & Enrichment Pipeline
+│   ├── validate_dataset.py            # Dataset Integrity Verification Tool
+│   └── requirements.txt               # Python Dependencies Manifest
+├── data/                               # Raw & Processed Dataset Files
+├── index.html                          # Web Gateway / Client Redirect
+└── README.md                           # Full-Stack Documentation
 ```
 
 ---
@@ -118,6 +155,7 @@ Ensure you have the following installed on your machine:
 - **Node.js**: `v18.0.0` or higher
 - **npm**: `v9.0.0` or higher
 - **JDK**: Java `17` or higher
+- **Python**: `3.9+` (Required only if running data scraper)
 - **Maven**: (Included via `mvnw` / `mvnw.cmd` wrapper)
 
 ---
@@ -130,7 +168,7 @@ Ensure you have the following installed on your machine:
    ```
 
 2. **Database Configuration** (`src/main/resources/application.properties`):
-   The backend includes a zero-config in-memory H2 database fallback out of the box. To connect your local PostgreSQL database, set the following environment variables or update `application.properties`:
+   The backend includes an in-memory H2 database fallback out of the box. To connect your PostgreSQL database, configure your environment variables or update `application.properties`:
    ```properties
    SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/moviehub
    SPRING_DATASOURCE_USERNAME=postgres
@@ -146,7 +184,7 @@ Ensure you have the following installed on your machine:
    # Linux / macOS
    ./mvnw spring-boot:run
    ```
-   The backend API will start on **`http://localhost:8080`** and auto-seed 250 top movies.
+   The backend REST API will start on **`http://localhost:8080`** and seed initial movie data.
 
 ---
 
@@ -182,40 +220,56 @@ Ensure you have the following installed on your machine:
 
 ---
 
-## 🔌 API Reference Table
+### 3. Data Scraper Pipeline Setup (Optional)
+
+To refresh or update movie scores from IMDb, Rotten Tomatoes, and Metacritic:
+
+1. **Navigate to the scraper directory:**
+   ```bash
+   cd scraper
+   ```
+
+2. **Install dependencies & browser engine:**
+   ```bash
+   pip install -r requirements.txt
+   playwright install chromium
+   ```
+
+3. **Run the data pipeline & validation:**
+   ```bash
+   python pipeline.py            # Full scrape run
+   python pipeline.py --limit 10 # Quick test run on 10 movies
+   python validate_dataset.py    # Validate generated movies_integrated.json
+   ```
+
+---
+
+## 🔌 Key REST API Endpoints
 
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/auth/register` | Register a new user account | ❌ Public |
 | `POST` | `/api/auth/login` | Authenticate user & return JWT token | ❌ Public |
-| `GET` | `/api/movies` | Fetch paginated movies with optional `search` & `genre` | ❌ Public |
-| `GET` | `/api/movies/{id}` | Get detailed movie metadata & scores | ❌ Public |
+| `GET` | `/api/movies` | Fetch paginated movies with `search` & `genre` filtering | ❌ Public |
+| `GET` | `/api/movies/{id}` | Get detailed movie metadata & ratings | ❌ Public |
 | `GET` | `/api/reviews/movie/{id}` | Get user reviews for a specific movie | ❌ Public |
-| `POST` | `/api/reviews` | Submit a new review & rating (1 to 5 stars) | 🔒 JWT Bearer |
+| `POST` | `/api/reviews` | Submit a review & rating (1 to 5 stars) | 🔒 JWT Bearer |
 | `PUT` | `/api/reviews/{id}` | Edit an existing user review | 🔒 JWT Bearer |
 | `DELETE` | `/api/reviews/{id}` | Delete a user review | 🔒 JWT Bearer |
 | `GET` | `/api/favorites` | List authenticated user's favorite movies | 🔒 JWT Bearer |
-| `POST` | `/api/favorites/{movieId}` | Add a movie to favorites | 🔒 JWT Bearer |
+| `POST` | `/api/favorites/{movieId}` | Add a movie to user favorites | 🔒 JWT Bearer |
 | `DELETE` | `/api/favorites/{movieId}` | Remove a movie from favorites | 🔒 JWT Bearer |
-| `GET` | `/api/theaters` | Discover nearby cinemas by `lat` & `lon` coordinates | ❌ Public |
+| `GET` | `/api/watchlist` | Get authenticated user's watchlist | 🔒 JWT Bearer |
+| `POST` | `/api/watchlist/{movieId}` | Add movie to watchlist | 🔒 JWT Bearer |
+| `GET` | `/api/theaters` | Discover nearby cinemas by `lat` & `lon` | ❌ Public |
 
 ---
 
 ## 🛡️ Fault Tolerance & Defensive Features
 
-- **Backend Offline Resilience**: If the API server is unreachable (`ERR_CONNECTION_REFUSED`), the frontend presents interactive error fallback cards with single-click **"Retry"** options.
+- **Backend Offline Resilience**: If the API server is unreachable, the frontend presents interactive error fallback cards with single-click **"Retry"** options.
 - **Empty Query Fallbacks**: Searching for titles or selecting genre filters with no matching records renders an empty state with a single-click **"Clear Filters"** button.
-- **React Error Boundary**: Top-level rendering exceptions are caught by `ErrorBoundary.jsx` to prevent full white-screen crashes and provide an immediate application reload prompt.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+- **React Error Boundary**: Top-level rendering exceptions are caught by `ErrorBoundary.jsx` to prevent white-screen crashes and provide an immediate reload prompt.
 
 ---
 
