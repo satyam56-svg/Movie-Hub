@@ -234,7 +234,7 @@ public class MovieDataLoader implements CommandLineRunner {
             existing.setReleaseYear(scraped.getReleaseYear());
         }
 
-        if (scraped.getPosterUrl() != null) {
+        if (scraped.getPosterUrl() != null && !scraped.getPosterUrl().trim().isEmpty()) {
             existing.setPosterUrl(scraped.getPosterUrl());
         }
 

@@ -151,6 +151,16 @@ function Header({ isLoggedIn, onLogout }) {
                                 </a>
                             </li>
 
+                            <li>
+                                <a
+                                    href="#genres"
+                                    className="nav-link"
+                                    onClick={closeMobileMenu}
+                                >
+                                    Genres
+                                </a>
+                            </li>
+
                             {isLoggedIn && (
                                 <>
                                     <li>

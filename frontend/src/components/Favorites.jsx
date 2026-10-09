@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import API_BASE_URL from '../api/config'
 import { authFetch } from '../api/authFetch'
+import { getPosterUrl } from '../utils/formatters'
 
 function FavoriteMovieCard({ favorite, onRemove }) {
     const [imgError, setImgError] = useState(false)
@@ -10,17 +11,15 @@ function FavoriteMovieCard({ favorite, onRemove }) {
         return null
     }
 
-    const hasPoster =
-        movie.posterUrl &&
-        movie.posterUrl.trim() !== '' &&
-        !imgError
+    const posterUrl = getPosterUrl(movie.posterUrl)
+    const hasPoster = !!posterUrl && !imgError
 
     return (
         <div className="movie-card">
             <div className="movie-poster">
                 {hasPoster ? (
                     <img
-                        src={movie.posterUrl}
+                        src={posterUrl}
                         alt={movie.title || 'Movie Poster'}
                         onError={() => setImgError(true)}
                         loading="lazy"

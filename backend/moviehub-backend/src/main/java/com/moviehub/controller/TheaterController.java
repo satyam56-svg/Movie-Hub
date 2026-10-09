@@ -20,35 +20,34 @@ public class TheaterController {
             @RequestParam double lon) {
 
         String query = """
-                [out:json][timeout:25];
+                [out:json][timeout:15];
                 (
-                  node["amenity"="cinema"](around:5000,%f,%f);
-                  way["amenity"="cinema"](around:5000,%f,%f);
-                  relation["amenity"="cinema"](around:5000,%f,%f);
+                  node["amenity"="cinema"](around:10000,%f,%f);
+                  way["amenity"="cinema"](around:10000,%f,%f);
+                  relation["amenity"="cinema"](around:10000,%f,%f);
                 );
                 out center tags;
                 """.formatted(lat, lon, lat, lon, lat, lon);
 
-        return restClient
-                .post()
-                .uri("https://overpass-api.de/api/interpreter")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body("data=" + java.net.URLEncoder.encode(
-                        query,
-                        java.nio.charset.StandardCharsets.UTF_8
-                ))
-                .retrieve()
-                .onStatus(
-                        status -> status.isError(),
-                        (request, response) -> {
-                            System.out.println("OVERPASS STATUS: " + response.getStatusCode());
-                            System.out.println("OVERPASS RESPONSE: " +
-                                    new String(
-                                            response.getBody().readAllBytes(),
-                                            java.nio.charset.StandardCharsets.UTF_8
-                                    ));
-                        }
-                )
-                .body(String.class);
+        try {
+            String result = restClient
+                    .post()
+                    .uri("https://overpass-api.de/api/interpreter")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body("data=" + java.net.URLEncoder.encode(
+                            query,
+                            java.nio.charset.StandardCharsets.UTF_8
+                    ))
+                    .retrieve()
+                    .body(String.class);
+
+            if (result != null && result.trim().startsWith("{")) {
+                return result;
+            }
+        } catch (Exception e) {
+            System.err.println("Overpass API error: " + e.getMessage());
+        }
+
+        return "{\"elements\":[]}";
     }
 }

@@ -45,7 +45,7 @@ public class MovieService {
                 && genre != null && !genre.isBlank()) {
 
             movies = movieRepository
-                    .findByTitleContainingIgnoreCaseAndGenreIgnoreCase(
+                    .findByTitleContainingIgnoreCaseAndGenreContainingIgnoreCase(
                             search,
                             genre,
                             pageable
@@ -62,7 +62,7 @@ public class MovieService {
         } else if (genre != null && !genre.isBlank()) {
 
             movies = movieRepository
-                    .findByGenreIgnoreCase(
+                    .findByGenreContainingIgnoreCase(
                             genre,
                             pageable
                     );

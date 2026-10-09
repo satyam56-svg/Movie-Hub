@@ -1,28 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-dark: #0b0f19;
-  --bg-surface: #1f2937;
-  --bg-glass: rgba(15, 23, 42, 0.85);
-  --accent-gold: #f59e0b;
-  --accent-gold-bg: rgba(245, 158, 11, 0.12);
-  --accent-primary: #6366f1;
-  --accent-primary-bg: rgba(99, 102, 241, 0.12);
-  --accent-red: #ef4444;
+  --bg-dark: #191A2E;
+  --bg-gradient: linear-gradient(180deg, #191A2E 0%, #1B1D33 100%);
+  --bg-surface: #131528;
+  --bg-card: #15172C;
+  --bg-glass: rgba(11, 11, 18, 0.95);
+  --accent-gold: #FFC107;
+  --accent-gold-hover: #FFCA0A;
+  --accent-gold-bg: rgba(255, 193, 7, 0.15);
+  --accent-primary: #7C3AED;
+  --accent-primary-bg: rgba(124, 58, 237, 0.15);
+  --accent-red: #EF4444;
   --accent-red-bg: rgba(239, 68, 68, 0.15);
-  --accent-green: #10b981;
-  --accent-blue: #3b82f6;
-  --text-main: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --border-subtle: #374151;
-  --border-glass: rgba(255, 255, 255, 0.1);
+  --accent-green: #10B981;
+  --accent-blue: #3B82F6;
+  --text-main: #FFFFFF;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.12);
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-full: 9999px;
   --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+  --shadow-glow: 0 0 20px rgba(255, 193, 7, 0.25);
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   --blur: blur(16px);
@@ -30,10 +33,19 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; color-scheme: dark; }
-body { background: var(--bg-dark); color: var(--text-main); font-family: var(--font-family); line-height: 1.6; overflow-x: hidden; min-height: 100vh; }
+body {
+  background: var(--bg-dark);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: var(--font-family);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
 
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-track { background: #0B0B12; }
 ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: var(--radius-full); }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
 ::selection { background: var(--accent-gold); color: #000; }

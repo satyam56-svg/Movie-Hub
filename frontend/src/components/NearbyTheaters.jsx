@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import API_BASE_URL from '../api/config'
+import InCinemas from './InCinemas'
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371
@@ -285,8 +286,9 @@ function NearbyTheaters() {
     }
 
     return (
-        <section id="theaters" className="section">
+        <section id="nearby" className="section">
             <div className="container">
+                <InCinemas locationName={locationName} />
 
                 <div
                     style={{
@@ -294,6 +296,7 @@ function NearbyTheaters() {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         marginBottom: '0.5rem',
+                        marginTop: '2.5rem',
                     }}
                 >
                     <h2 className="section-title">

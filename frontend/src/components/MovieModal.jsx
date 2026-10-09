@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import Reviews from './Reviews'
+import InCinemas from './InCinemas'
+import WhereToWatch from './WhereToWatch'
 import API_BASE_URL from '../api/config'
 import { authFetch } from '../api/authFetch'
+import { getPosterUrl } from '../utils/formatters'
 
 function MoviePoster({ movie }) {
     const [imgError, setImgError] = useState(false)
 
-    const hasPoster =
-        movie.posterUrl &&
-        movie.posterUrl.trim() !== '' &&
-        !imgError
+    const posterUrl = getPosterUrl(movie?.posterUrl)
+    const hasPoster = !!posterUrl && !imgError
 
     if (!hasPoster) {
         return (
@@ -23,7 +24,7 @@ function MoviePoster({ movie }) {
     return (
         <img
             className="movie-detail-poster"
-            src={movie.posterUrl}
+            src={posterUrl}
             alt={movie.title || 'Movie Poster'}
             onError={() => setImgError(true)}
             loading="lazy"
@@ -398,12 +399,14 @@ function MovieModal({ movie, onClose }) {
                             </div>
                         )}
 
+                        <InCinemas selectedMovie={movie} />
+                        <WhereToWatch movie={movie} />
+
                         <Reviews movieId={movie.id} />
                     </div>
                 </div>
             </div>
         </div>
-        // </div>
     )
 }
 

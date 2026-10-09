@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { getPosterUrl } from '../utils/formatters'
 
 function MovieCard({ movie, onMovieClick }) {
     const [imgError, setImgError] = useState(false)
 
-    const hasPoster = movie?.posterUrl && movie.posterUrl.trim() !== '' && !imgError
+    const posterUrl = getPosterUrl(movie?.posterUrl)
+    const hasPoster = !!posterUrl && !imgError
 
     const openMovie = () => onMovieClick?.(movie)
 
@@ -26,7 +28,7 @@ function MovieCard({ movie, onMovieClick }) {
             <div className="movie-poster">
                 {hasPoster ? (
                     <img
-                        src={movie.posterUrl}
+                        src={posterUrl}
                         alt={movie.title || 'Movie Poster'}
                         onError={() => setImgError(true)}
                         loading="lazy"
@@ -45,13 +47,13 @@ function MovieCard({ movie, onMovieClick }) {
                     {movie.title}
                 </h3>
 
-                {movie.releaseYear && (
+                {movie.releaseYear && movie.releaseYear > 0 && (
                     <div className="movie-year">
                         {movie.releaseYear}
                     </div>
                 )}
 
-                {movie.imdbRating != null && (
+                {movie.imdbRating != null && movie.imdbRating > 0 && (
                     <div className="movie-rating">
                         <span className="rating-stars">★</span>
                         <span className="rating-value">{movie.imdbRating} IMDb</span>

@@ -6,6 +6,7 @@ import Register from './components/Register'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import MovieSection from './components/MovieSection'
+import GenresSection from './components/GenresSection'
 import NearbyTheaters from './components/NearbyTheaters'
 import Profile from './components/Profile'
 import Favorites from './components/Favorites'
@@ -20,15 +21,12 @@ function App() {
     )
     const [showRegister, setShowRegister] = useState(false)
 
-
     const handleSearch = (term) => {
         setSearchTerm(term)
 
         document
             .getElementById('top-movies')
-            ?.scrollIntoView({
-                behavior: 'smooth',
-            })
+            ?.scrollIntoView({ behavior: 'smooth' })
     }
 
     const handleLoginSuccess = () => {
@@ -39,26 +37,19 @@ function App() {
         localStorage.removeItem('token')
         localStorage.removeItem('username')
         localStorage.removeItem('role')
-
         setIsLoggedIn(false)
     }
 
     // Auto-logout when authFetch detects a stale token (401/403 from backend)
     useEffect(() => {
-        const onSessionExpired = () => {
-            setIsLoggedIn(false)
-        }
+        const onSessionExpired = () => setIsLoggedIn(false)
         window.addEventListener('session-expired', onSessionExpired)
-        return () =>
-            window.removeEventListener('session-expired', onSessionExpired)
+        return () => window.removeEventListener('session-expired', onSessionExpired)
     }, [])
 
     return (
         <div className="app-container">
-            <Header
-                isLoggedIn={isLoggedIn}
-                onLogout={handleLogout}
-            />
+            <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
 
             <Hero onSearch={handleSearch} />
 
@@ -98,10 +89,15 @@ function App() {
                 </section>
             )}
 
+            {/* Top Movies — id="top-movies" */}
             <MovieSection
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
             />
+
+            {/* Browse by Genre — id="genres" */}
+            <GenresSection />
+
             {isLoggedIn && <Profile />}
             {isLoggedIn && <MyReviews />}
             {isLoggedIn && <Favorites />}
@@ -109,6 +105,8 @@ function App() {
             {isLoggedIn && localStorage.getItem('role') === 'ADMIN' && (
                 <AdminDashboard />
             )}
+
+            {/* Nearby Theaters — id="nearby" */}
             <NearbyTheaters />
         </div>
     )

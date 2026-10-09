@@ -81,7 +81,7 @@ def build_movie_record(imdb, rt, mc):
 
         "releaseYear": extract_year(imdb.get("year")),
 
-        "posterUrl": "",
+        "posterUrl": imdb.get("poster") or imdb.get("posterUrl") or "",
 
         "imdbRating": imdb_rating,
 
