@@ -34,6 +34,7 @@ public class MovieController {
     public ResponseEntity<Page<MovieResponse>> getMovies(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String genre,
+            @RequestParam(required = false) String director,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -41,6 +42,7 @@ public class MovieController {
                 movieService.getMovies(
                         search,
                         genre,
+                        director,
                         page,
                         size
                 )

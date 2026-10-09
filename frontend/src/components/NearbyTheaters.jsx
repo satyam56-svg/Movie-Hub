@@ -372,14 +372,24 @@ function NearbyTheaters() {
 
                         <p>{error}</p>
 
-                        <button
-                            type="button"
-                            onClick={detectLocation}
-                            className="btn-primary"
-                            style={{ marginTop: '1rem' }}
-                        >
-                            Try Again
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
+                            <button
+                                type="button"
+                                onClick={detectLocation}
+                                className="btn-primary"
+                            >
+                                Try Again
+                            </button>
+                            <a
+                                href="https://www.google.com/maps/search/movie+theater+near+me"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-secondary"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
+                            >
+                                <i className="fas fa-external-link-alt"></i> Search on Google Maps
+                            </a>
+                        </div>
                     </div>
                 )}
 
@@ -404,10 +414,18 @@ function NearbyTheaters() {
                                 }}
                             ></i>
 
-                            <p>
-                                No real theaters were found within
-                                15 km of your location.
+                            <p style={{ marginBottom: '1rem' }}>
+                                No cinemas found within 20 km of your location via OpenStreetMap.
                             </p>
+                            <a
+                                href="https://www.google.com/maps/search/movie+theater+near+me"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-secondary"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
+                            >
+                                <i className="fas fa-external-link-alt"></i> Search on Google Maps
+                            </a>
                         </div>
                     )}
 

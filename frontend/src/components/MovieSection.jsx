@@ -3,6 +3,7 @@ import MovieCard from './MovieCard'
 import MovieModal from './MovieModal'
 import SkeletonCard from './SkeletonCard'
 import { useDebounce } from '../hooks/useDebounce'
+import { parseQuery } from '../utils/queryParser'
 import API_BASE_URL from '../api/config'
 
 function MovieSection({ searchTerm, onSearchChange }) {
@@ -13,6 +14,7 @@ function MovieSection({ searchTerm, onSearchChange }) {
     const [selectedGenre, setSelectedGenre] = useState('')
     const [page, setPage] = useState(0)
     const [totalPages, setTotalPages] = useState(0)
+    const [activeParsedQuery, setActiveParsedQuery] = useState(null)
 
     const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
@@ -24,18 +26,32 @@ function MovieSection({ searchTerm, onSearchChange }) {
             setError('')
 
             try {
+                const parsed = parseQuery(debouncedSearchTerm)
+                setActiveParsedQuery(parsed)
+
                 const params = new URLSearchParams()
 
-                if (debouncedSearchTerm.trim()) {
-                    params.append('search', debouncedSearchTerm.trim())
+                // If user selected explicit genre, use it; otherwise use parsed genre
+                const effectiveGenre = selectedGenre || parsed.genre || ''
+                // If parsed director exists, send director param; otherwise send search param
+                const effectiveDirector = parsed.director || ''
+                const effectiveSearch = parsed.search || ''
+
+                if (effectiveSearch.trim()) {
+                    params.append('search', effectiveSearch.trim())
                 }
 
-                if (selectedGenre) {
-                    params.append('genre', selectedGenre)
+                if (effectiveGenre) {
+                    params.append('genre', effectiveGenre)
                 }
 
+                if (effectiveDirector) {
+                    params.append('director', effectiveDirector)
+                }
+
+                const pageSize = parsed.limit && parsed.limit > 10 ? parsed.limit : 10
                 params.append('page', page)
-                params.append('size', 10)
+                params.append('size', pageSize)
 
                 const token = localStorage.getItem('token')
 
@@ -53,7 +69,11 @@ function MovieSection({ searchTerm, onSearchChange }) {
                 const data = await response.json()
 
                 if (isSubscribed) {
-                    setMovies(data.content || [])
+                    let content = data.content || []
+                    if (parsed.limit && parsed.limit > 0) {
+                        content = content.slice(0, parsed.limit)
+                    }
+                    setMovies(content)
                     setTotalPages(data.totalPages || 0)
                 }
             } catch (err) {
@@ -132,6 +152,24 @@ function MovieSection({ searchTerm, onSearchChange }) {
                         </button>
                     )}
                 </div>
+
+                {activeParsedQuery?.badgeText && (
+                    <div style={{
+                        marginBottom: '1.5rem',
+                        padding: '0.6rem 1rem',
+                        background: 'rgba(212, 175, 55, 0.1)',
+                        border: '1px solid rgba(212, 175, 55, 0.3)',
+                        borderRadius: '8px',
+                        color: 'var(--accent-gold)',
+                        fontSize: '0.9rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}>
+                        <i className="fas fa-magic"></i>
+                        <span>Smart Filter: <strong>{activeParsedQuery.badgeText}</strong></span>
+                    </div>
+                )}
 
                 {loading ? (
                     <div className="movies-grid">

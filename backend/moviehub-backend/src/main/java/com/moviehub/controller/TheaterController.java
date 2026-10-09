@@ -4,11 +4,19 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/theaters")
 public class TheaterController {
 
     private final RestClient restClient;
+
+    private static final List<String> OVERPASS_ENDPOINTS = List.of(
+            "https://overpass.kumi.systems/api/interpreter",
+            "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+            "https://overpass-api.de/api/interpreter"
+    );
 
     public TheaterController() {
         this.restClient = RestClient.create();
@@ -20,32 +28,33 @@ public class TheaterController {
             @RequestParam double lon) {
 
         String query = """
-                [out:json][timeout:15];
+                [out:json][timeout:10];
                 (
-                  node["amenity"="cinema"](around:10000,%f,%f);
-                  way["amenity"="cinema"](around:10000,%f,%f);
-                  relation["amenity"="cinema"](around:10000,%f,%f);
+                  node["amenity"="cinema"](around:20000,%f,%f);
+                  way["amenity"="cinema"](around:20000,%f,%f);
                 );
                 out center tags;
-                """.formatted(lat, lon, lat, lon, lat, lon);
+                """.formatted(lat, lon, lat, lon);
 
-        try {
-            String result = restClient
-                    .post()
-                    .uri("https://overpass-api.de/api/interpreter")
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .body("data=" + java.net.URLEncoder.encode(
-                            query,
-                            java.nio.charset.StandardCharsets.UTF_8
-                    ))
-                    .retrieve()
-                    .body(String.class);
+        for (String endpoint : OVERPASS_ENDPOINTS) {
+            try {
+                String result = restClient
+                        .post()
+                        .uri(endpoint)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .body("data=" + java.net.URLEncoder.encode(
+                                query,
+                                java.nio.charset.StandardCharsets.UTF_8
+                        ))
+                        .retrieve()
+                        .body(String.class);
 
-            if (result != null && result.trim().startsWith("{")) {
-                return result;
+                if (result != null && result.trim().startsWith("{")) {
+                    return result;
+                }
+            } catch (Exception e) {
+                System.err.println("Overpass endpoint " + endpoint + " failed: " + e.getMessage());
             }
-        } catch (Exception e) {
-            System.err.println("Overpass API error: " + e.getMessage());
         }
 
         return "{\"elements\":[]}";

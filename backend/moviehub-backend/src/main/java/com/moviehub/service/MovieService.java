@@ -34,6 +34,7 @@ public class MovieService {
     public Page<MovieResponse> getMovies(
             String search,
             String genre,
+            String director,
             int page,
             int size) {
 
@@ -41,34 +42,23 @@ public class MovieService {
 
         Page<Movie> movies;
 
-        if (search != null && !search.isBlank()
-                && genre != null && !genre.isBlank()) {
+        boolean hasSearch = search != null && !search.isBlank();
+        boolean hasGenre = genre != null && !genre.isBlank();
+        boolean hasDirector = director != null && !director.isBlank();
 
-            movies = movieRepository
-                    .findByTitleContainingIgnoreCaseAndGenreContainingIgnoreCase(
-                            search,
-                            genre,
-                            pageable
-                    );
-
-        } else if (search != null && !search.isBlank()) {
-
-            movies = movieRepository
-                    .findByTitleContainingIgnoreCase(
-                            search,
-                            pageable
-                    );
-
-        } else if (genre != null && !genre.isBlank()) {
-
-            movies = movieRepository
-                    .findByGenreContainingIgnoreCase(
-                            genre,
-                            pageable
-                    );
-
+        if (hasDirector && hasGenre) {
+            movies = movieRepository.findByDirectorContainingIgnoreCaseAndGenreContainingIgnoreCase(
+                    director, genre, pageable);
+        } else if (hasDirector) {
+            movies = movieRepository.findByDirectorContainingIgnoreCase(director, pageable);
+        } else if (hasSearch && hasGenre) {
+            movies = movieRepository.findByTitleOrDirectorContainingIgnoreCaseAndGenreContainingIgnoreCase(
+                    search, genre, pageable);
+        } else if (hasSearch) {
+            movies = movieRepository.findByTitleOrDirectorContainingIgnoreCase(search, pageable);
+        } else if (hasGenre) {
+            movies = movieRepository.findByGenreContainingIgnoreCase(genre, pageable);
         } else {
-
             movies = movieRepository.findAll(pageable);
         }
 
