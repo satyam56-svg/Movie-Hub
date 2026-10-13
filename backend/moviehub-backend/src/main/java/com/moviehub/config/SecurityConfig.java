@@ -94,6 +94,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**")
                         .permitAll()
 
+                        // UptimeRobot health check — must be public to keep Render alive
+                        .requestMatchers(HttpMethod.GET, "/api/health")
+                        .permitAll()
+
                         // Public email check
                         .requestMatchers("/api/users/check-email")
                         .permitAll()
